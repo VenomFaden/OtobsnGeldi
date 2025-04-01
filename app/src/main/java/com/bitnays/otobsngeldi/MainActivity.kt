@@ -1,14 +1,23 @@
 package com.bitnays.otobsngeldi
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
-import android.util.Xml
-import android.widget.Button
+import android.util.Log
+import android.view.View
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresPermission
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bitnays.otobsngeldi.databinding.ActivityMainBinding
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,25 +28,32 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okio.IOException
-import org.json.JSONObject
 import org.xmlpull.v1.XmlPullParser
-import org.xmlpull.v1.XmlPullParserException
 import org.xmlpull.v1.XmlPullParserFactory
-import java.io.InputStream
 import java.io.StringReader
 
 private val client = OkHttpClient()
 private lateinit var binding: ActivityMainBinding
+private lateinit var HatKodu: String
+private lateinit var fusedLocationClient: FusedLocationProviderClient
+
 @Serializable
 data class OtoHatKonum (val kapino: String, val boylam: String, val enlem: String, val hatkodu: String, val guzergahkodu: String, val hatad: String, val yon: String, val son_konum_zamani: String, val yakinDurakKodu: String)
 
 class MainActivity : AppCompatActivity() {
-    private val client = OkHttpClient()
-    private lateinit var binding: ActivityMainBinding
-    private lateinit var HatKodu: String
-
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                // Permission is granted. Continue the action or workflow in your app.
+            }
+        }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
@@ -91,6 +107,38 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+    @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+    override fun onStart() {
+        super.onStart()
+        getLocationPermission(binding.root)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location : Location? ->
+                Log.d("location", location.toString())
+                binding.textView2.text = location.toString()
+            }
+    }
+    fun getLocationPermission(view: View)
+    {    Log.d("permission", "0")
+        when {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
+                Log.d("permission", "1")
+            }
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                this, Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                Snackbar.make(view, "Permission is needed", Snackbar.LENGTH_INDEFINITE).setAction(
+                    "İzin ver", View.OnClickListener {
+                        requestPermissionLauncher.launch(
+                            Manifest.permission.ACCESS_FINE_LOCATION)
+                    }
+                ).show()
+            }
+            else -> {
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                Log.d("permission", "3")
+            }
+        }
+    }
     fun xml_parser(xmlString: String): String
     {
         var xml_data = xmlString
@@ -103,13 +151,6 @@ class MainActivity : AppCompatActivity() {
         {
             var tag_name = parser.name
             when(eventType){
-
-                XmlPullParser.START_TAG ->{
-                    if(tag_name.equals("GetHatOtoKonum_jsonResult"))
-                    {
-
-                    }
-                }
                 XmlPullParser.TEXT ->{
                     var text = parser.text
                     println(text)
@@ -117,16 +158,13 @@ class MainActivity : AppCompatActivity() {
                     return text
                 }
 
-
             }
             eventType = parser.next()
-
         }
         return "null"
     }
     fun parseJSON(jsonStrings: String) {
         println("parsejson")
-
         jsonStrings.trimIndent()
         val OtoHatKonumList = Json.decodeFromString<List<OtoHatKonum>>(jsonStrings)
         OtoHatKonumList.forEach { oto ->
