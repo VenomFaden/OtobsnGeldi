@@ -1,6 +1,7 @@
 package com.bitnays.otobsngeldi
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -52,8 +53,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
@@ -86,7 +85,7 @@ class MainActivity : AppCompatActivity() {
                         // Sonucu UI thread üzerinde işlemek için
                         runOnUiThread {
                             var responseBody = response.body?.string()
-                            //println("Başarılı: ${responseBody}")
+                            println("Başarılı: ${responseBody}")
                             //binding.stopName.text = responseBody.toString()
                             xml_parser(responseBody.toString())
                         }
@@ -115,7 +114,6 @@ class MainActivity : AppCompatActivity() {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location : Location? ->
                 Log.d("location", location.toString())
-                binding.textView2.text = location.toString()
             }
     }
     fun getLocationPermission(view: View)
@@ -139,41 +137,37 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    fun xml_parser(xmlString: String): String
+    fun xml_parser(xmlString: String)
     {
         var xml_data = xmlString
         var factory = XmlPullParserFactory.newInstance()
         var parser = factory.newPullParser()
-
         parser.setInput(StringReader(xml_data))
         var eventType = parser.eventType
         while (eventType != XmlPullParser.END_DOCUMENT)
         {
-            var tag_name = parser.name
             when(eventType){
                 XmlPullParser.TEXT ->{
                     var text = parser.text
-                    println(text)
-                    parseJSON(text)
-                    return text
+                    sendIntentToList(text)
                 }
-
             }
             eventType = parser.next()
         }
-        return "null"
     }
     fun parseJSON(jsonStrings: String) {
-        println("parsejson")
-        jsonStrings.trimIndent()
-        val OtoHatKonumList = Json.decodeFromString<List<OtoHatKonum>>(jsonStrings)
-        OtoHatKonumList.forEach { oto ->
-            println(oto.kapino)
-            binding.textView.text = oto.toString();
-        }
+        // println("JSON: ${jsonStrings}")
+        //jsonStrings.trimIndent()
+        //val OtoHatKonumList = Json.decodeFromString<List<OtoHatKonum>>(jsonStrings)
+        //OtoHatKonumList.forEach { oto -> }
+    }
+    fun sendIntentToList(intentString: String)
+    {
+        var intent: Intent = Intent(this, MainActivity2::class.java)
+        intent.putExtra("intentString", intentString)
+        startActivity(intent)
     }
     companion object {
-        // XML için uygun media type
         val MEDIA_TYPE_XML = "text/xml; charset=utf-8".toMediaType()
     }
 }
