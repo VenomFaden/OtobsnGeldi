@@ -76,7 +76,7 @@ class MainActivity2 : AppCompatActivity() {
                     if (response.isSuccessful){
                         runOnUiThread {
                             var responseBody = response.body?.string()
-                            println(responseBody)
+                            println(responseBody.toString())
                         }
                     }
                     else{
