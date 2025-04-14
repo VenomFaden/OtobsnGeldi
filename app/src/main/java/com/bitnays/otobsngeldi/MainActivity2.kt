@@ -77,7 +77,6 @@ class MainActivity2 : AppCompatActivity() {
                         runOnUiThread {
                             var responseBody = response.body?.string()
                             println(responseBody)
-                            xml_parser(responseBody.toString())
                         }
                     }
                     else{
@@ -98,25 +97,7 @@ class MainActivity2 : AppCompatActivity() {
     {
         return Json.decodeFromString<ArrayList<OtoHatKonum>>(text.toString()) as ArrayList<OtoHatKonum>
     }
-    fun xml_parser(xmlString: String)
-    {
-        var xml_data = xmlString
-        var factory = XmlPullParserFactory.newInstance()
-        var parser = factory.newPullParser()
-        parser.setInput(StringReader(xml_data))
-        var eventType = parser.eventType
-        while (eventType != XmlPullParser.END_DOCUMENT)
-        {
-            when(eventType){
 
-                XmlPullParser.TEXT ->{
-                    var text = parser.text
-                    println(text)
-                }
-            }
-            eventType = parser.next()
-        }
-    }
     companion object {
         val MEDIA_TYPE_XML = "text/xml; charset=utf-8".toMediaType()
     }
