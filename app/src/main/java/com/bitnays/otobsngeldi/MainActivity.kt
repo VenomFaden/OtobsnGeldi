@@ -23,7 +23,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -86,13 +85,12 @@ class MainActivity : AppCompatActivity() {
                         runOnUiThread {
                             var responseBody = response.body?.string()
                             println("Başarılı: ${responseBody}")
-                            //binding.stopName.text = responseBody.toString()
                             xml_parser(responseBody.toString())
                         }
                     } else {
                         // Hata durumunda UI thread üzerinde işlemek için
                         runOnUiThread {
-                            println("Hata: ${response.code}")
+                            //println("Hata: ${response.code}")
                             Toast.makeText(applicationContext, "Böyle bir otobüs yok HATA: ${response.code}", Toast.LENGTH_SHORT).show()
                         }
                     }
@@ -117,7 +115,7 @@ class MainActivity : AppCompatActivity() {
             }
     }
     fun getLocationPermission(view: View)
-    {    Log.d("permission", "0")
+    {
         when {
             ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
                 Log.d("permission", "1")
@@ -126,8 +124,7 @@ class MainActivity : AppCompatActivity() {
                 this, Manifest.permission.ACCESS_FINE_LOCATION) -> {
                 Snackbar.make(view, "Permission is needed", Snackbar.LENGTH_INDEFINITE).setAction(
                     "İzin ver", View.OnClickListener {
-                        requestPermissionLauncher.launch(
-                            Manifest.permission.ACCESS_FINE_LOCATION)
+                        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                     }
                 ).show()
             }
@@ -147,24 +144,21 @@ class MainActivity : AppCompatActivity() {
         while (eventType != XmlPullParser.END_DOCUMENT)
         {
             when(eventType){
+
                 XmlPullParser.TEXT ->{
                     var text = parser.text
                     sendIntentToList(text)
                 }
+
             }
             eventType = parser.next()
         }
-    }
-    fun parseJSON(jsonStrings: String) {
-        // println("JSON: ${jsonStrings}")
-        //jsonStrings.trimIndent()
-        //val OtoHatKonumList = Json.decodeFromString<List<OtoHatKonum>>(jsonStrings)
-        //OtoHatKonumList.forEach { oto -> }
     }
     fun sendIntentToList(intentString: String)
     {
         var intent: Intent = Intent(this, MainActivity2::class.java)
         intent.putExtra("intentString", intentString)
+        intent.putExtra("hatkodu",HatKodu)
         startActivity(intent)
     }
     companion object {
