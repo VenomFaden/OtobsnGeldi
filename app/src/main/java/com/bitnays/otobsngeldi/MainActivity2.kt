@@ -6,9 +6,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bitnays.otobsngeldi.MainActivity.Companion.MEDIA_TYPE_XML
 import com.bitnays.otobsngeldi.databinding.ActivityMain2Binding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,15 +17,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okio.IOException
-import org.xmlpull.v1.XmlPullParser
-import org.xmlpull.v1.XmlPullParserFactory
-import java.io.StringReader
 
 private lateinit var binding: ActivityMain2Binding
 private var OtoHatKonumList = ArrayList<OtoHatKonum>()
 private lateinit var  HatKodu :String
 private val client = OkHttpClient()
-private lateinit var responseString: String
 
 class MainActivity2 : AppCompatActivity() {
 
@@ -41,19 +35,15 @@ class MainActivity2 : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
         var intent: Intent = getIntent()
         var intentString = intent.getStringExtra("intentString")
         HatKodu = intent.getStringExtra("hatkodu").toString()
         println(HatKodu)
         OtoHatKonumList = jsonDecode(intentString.toString())
-
         val adapter =  OtobusAdapter(OtoHatKonumList)
         binding.recylervi.layoutManager = LinearLayoutManager(this)
         binding.recylervi.adapter = adapter
-
     }
-
     override fun onStart() {
         super.onStart()
         CoroutineScope(Dispatchers.IO).launch {
@@ -87,7 +77,7 @@ class MainActivity2 : AppCompatActivity() {
             }
             catch (e: IOException) {
                 runOnUiThread{
-
+                    println("Hata: ${e}")
                 }
             }
         }
