@@ -140,9 +140,11 @@ class MainActivity : AppCompatActivity() {
         var factory = XmlPullParserFactory.newInstance()
         var parser = factory.newPullParser()
         parser.setInput(StringReader(xml_data))
+
         var eventType = parser.eventType
         while (eventType != XmlPullParser.END_DOCUMENT)
         {
+            //println("saa"+parser.columnNumber+" "+parser.text)
             when(eventType){
 
                 XmlPullParser.TEXT ->{
