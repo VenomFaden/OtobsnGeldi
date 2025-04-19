@@ -29,6 +29,7 @@ private val client = OkHttpClient()
 private var durakInfoList = ArrayList<Durak>()
 class MainActivity2 : AppCompatActivity() {
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityMain2Binding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
