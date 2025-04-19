@@ -2,6 +2,7 @@ package com.bitnays.otobsngeldi
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.util.Xml
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -27,6 +28,7 @@ private var OtoHatKonumList = ArrayList<OtoHatKonum>()
 private lateinit var  HatKodu :String
 private val client = OkHttpClient()
 private var durakInfoList = ArrayList<Durak>()
+private var intentString: String? = null
 class MainActivity2 : AppCompatActivity() {
 
 
@@ -41,6 +43,18 @@ class MainActivity2 : AppCompatActivity() {
             insets
         }
 
+        var intent: Intent = getIntent()
+        intentString = intent.getStringExtra("intentString")
+        HatKodu = intent.getStringExtra("hatkodu").toString()
+        getXML()
+    }
+    override fun onStart() {
+        super.onStart()
+
+
+    }
+    fun getXML()
+    {
         CoroutineScope(Dispatchers.IO).launch {
             val postBody = """
                 <?xml version='1.0' encoding='utf-8'?>
@@ -59,12 +73,10 @@ class MainActivity2 : AppCompatActivity() {
             try {
                 val response = client.newCall(request).execute()
                 if (response.isSuccessful){
-                    runOnUiThread {
-                        var responseBody = response.body?.string()
-                        println(responseBody.toString())
-                        xmlParser(responseBody.toString())
-                        println(durakInfoList.get(1))
-                    }
+                    runOnUiThread { var responseBody = response.body?.string()
+                        xmlParser(responseBody.toString())  }
+
+
                 }
                 else{
                     runOnUiThread {
@@ -78,19 +90,6 @@ class MainActivity2 : AppCompatActivity() {
                 }
             }
         }
-        var intent: Intent = getIntent()
-        var intentString = intent.getStringExtra("intentString")
-        HatKodu = intent.getStringExtra("hatkodu").toString()
-        println(HatKodu)
-        OtoHatKonumList = jsonDecode(intentString.toString())
-        val adapter =  OtobusAdapter(OtoHatKonumList)
-        binding.recylervi.layoutManager = LinearLayoutManager(this)
-        binding.recylervi.adapter = adapter
-    }
-    override fun onStart() {
-        super.onStart()
-
-
     }
     fun jsonDecode(text: String): ArrayList<OtoHatKonum>
     {
@@ -106,8 +105,6 @@ class MainActivity2 : AppCompatActivity() {
         parser.setInput(StringReader(text))
         var eventType = parser.eventType
         while (eventType != XmlPullParser.END_DOCUMENT) {
-
-            var parserText: String = ""
             when(eventType)
             {
                 XmlPullParser.START_TAG -> {
@@ -129,10 +126,20 @@ class MainActivity2 : AppCompatActivity() {
                     }
                 }
             }
-            var parserName =  parser.name
-            println(parserName+"  "+parserText)
             eventType = parser.next()
         }
+        createList()
+    }
+    fun createList()
+    {
+        OtoHatKonumList = jsonDecode(intentString.toString())
+        OtoHatKonumList.forEach { hat ->
+            val durakName = durakInfoList.find { it.DURAKKODU ==  hat.yakinDurakKodu }
+            hat.yakinDurakKodu = durakName?.DURAKADI.toString()+hat.yakinDurakKodu
+        }
+        val adapter =  OtobusAdapter(OtoHatKonumList)
+        binding.recylervi.layoutManager = LinearLayoutManager(this)
+        binding.recylervi.adapter = adapter
     }
     companion object {
         val MEDIA_TYPE_XML = "text/xml; charset=utf-8".toMediaType()
