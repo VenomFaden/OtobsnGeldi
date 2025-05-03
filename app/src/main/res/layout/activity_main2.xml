@@ -14,9 +14,10 @@
         android:layout_marginTop="28dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recylervi" />
+        app:layout_constraintTop_toBottomOf="@+id/recylervi"
+        app:layout_constraintVertical_bias="0.666" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recylervi"
@@ -26,7 +27,42 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.061" >
+        app:layout_constraintVertical_bias="0.061">
 
     </androidx.recyclerview.widget.RecyclerView>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.555">
+
+        <TextView
+            android:id="@+id/gidisTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="Gidiş" />
+
+        <Switch
+            android:id="@+id/GidisDonusSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:thumbTint="#4CAF50"
+            android:thumbTintMode="src_in" />
+
+        <TextView
+            android:id="@+id/donusTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="Dönüş" />
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

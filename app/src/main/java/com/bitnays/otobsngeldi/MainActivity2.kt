@@ -1,6 +1,8 @@
 package com.bitnays.otobsngeldi
 
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.util.Xml
@@ -22,6 +24,7 @@ import okio.IOException
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.StringReader
+import androidx.core.graphics.toColorInt
 
 private lateinit var binding: ActivityMain2Binding
 private var OtoHatKonumList = ArrayList<OtoHatKonum>()
@@ -29,7 +32,8 @@ private lateinit var  HatKodu :String
 private val client = OkHttpClient()
 private var durakInfoList = ArrayList<Durak>()
 private var intentString: String? = null
-
+private var durakInfoListD = ArrayList<Durak>()
+private var durakInfoListG = ArrayList<Durak>()
 class MainActivity2 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityMain2Binding.inflate(layoutInflater)
@@ -46,11 +50,27 @@ class MainActivity2 : AppCompatActivity() {
         intentString = intent.getStringExtra("intentString")
         HatKodu = intent.getStringExtra("hatkodu").toString()
         getXML()
+        binding.GidisDonusSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                durakList(durakInfoListD)
+                binding.GidisDonusSwitch.thumbTintList = ColorStateList.valueOf("#F44336".toColorInt())
+            } else {
+
+                binding.GidisDonusSwitch.thumbTintList = ColorStateList.valueOf("#4CAF50".toColorInt())
+                durakList(durakInfoListG)
+            }
+        }
     }
     override fun onStart() {
         super.onStart()
 
 
+    }
+
+    override fun onPause() {
+        super.onPause()
+        durakInfoList.clear()
+        println("onPause")
     }
     fun getXML()
     {
@@ -75,6 +95,8 @@ class MainActivity2 : AppCompatActivity() {
                     runOnUiThread {
                         var responseBody = response.body?.string()
                         xmlParser(responseBody.toString())
+                        otobusListSlicer()
+                        durakList(durakInfoListG)
                     }
 
                 }
@@ -101,6 +123,8 @@ class MainActivity2 : AppCompatActivity() {
         var durakKod:String = ""
         var siraNo: String = ""
         var yon: String = ""
+        var YKOORDINATI: String = ""
+        var XKOORDINATI: String = ""
         var factory = XmlPullParserFactory.newInstance()
         val parser = factory.newPullParser()
         parser.setInput(StringReader(text))
@@ -109,6 +133,7 @@ class MainActivity2 : AppCompatActivity() {
             when(eventType)
             {
                 XmlPullParser.START_TAG -> {
+                    // println(parser.name+"0")
                     when (parser.name) {
                         "YON"->{
                             parser.next()
@@ -125,7 +150,15 @@ class MainActivity2 : AppCompatActivity() {
                         "DURAKADI"->{
                             parser.next()
                             durakKod = parser.text
-                            durakInfoList.add(Durak(yon,siraNo,durakIsım,durakKod))
+                        }
+                        "XKOORDINATI"->{
+                            parser.next()
+                            XKOORDINATI = parser.text
+                        }
+                        "YKOORDINATI"->{
+                            parser.next()
+                            YKOORDINATI = parser.text
+                            durakInfoList.add(Durak(yon,siraNo,durakIsım,durakKod,XKOORDINATI,YKOORDINATI))
                         }
                     }
                 }
@@ -133,7 +166,12 @@ class MainActivity2 : AppCompatActivity() {
             eventType = parser.next()
         }
         createList()
-        durakList()
+    }
+    fun otobusListSlicer()
+    {
+        var arrayListSize = durakInfoList.size
+        durakInfoListD= ArrayList<Durak>(durakInfoList.slice(0 until arrayListSize / 2))
+        durakInfoListG = ArrayList<Durak>(durakInfoList.slice(arrayListSize / 2 until arrayListSize))
     }
     fun createList()
     {
@@ -146,14 +184,13 @@ class MainActivity2 : AppCompatActivity() {
         binding.recylervi.layoutManager = LinearLayoutManager(this)
         binding.recylervi.adapter = adapter
     }
-    fun durakList()
+    fun durakList(arrayList: ArrayList<Durak>)
     {
-        val adapter =  DurakAdapter(durakInfoList)
+        val adapter =  DurakAdapter(arrayList)
         binding.recylerview2.layoutManager = LinearLayoutManager(this)
         binding.recylerview2.adapter = adapter
     }
     companion object {
         val MEDIA_TYPE_XML = "text/xml; charset=utf-8".toMediaType()
     }
-
 }
