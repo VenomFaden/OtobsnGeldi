@@ -12,14 +12,15 @@ class OtobusAdapter(val otobusListesi: ArrayList<OtoHatKonum>) : RecyclerView.Ad
 
     // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = RecylerRowBinding.inflate(LayoutInflater.from(parent.context),parent as ViewGroup?,false)
+        val binding = RecylerRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
         return ViewHolder(binding)
 
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding.KapiNo.text = otobusListesi.get(position).kapino.toString()
-        holder.binding.bulunduguDurak.text = otobusListesi.get(position).yakinDurakKodu.toString()
+        holder.binding.durakIsmi.text = otobusListesi.get(position).yakinDurakKodu.toString()
+        holder.binding.GidisYonu.text = otobusListesi.get(position).yon.toString()
     }
 
     // Return the size of your dataset (invoked by the layout manager)

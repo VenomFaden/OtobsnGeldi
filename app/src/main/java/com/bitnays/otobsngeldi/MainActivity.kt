@@ -37,9 +37,6 @@ private lateinit var binding: ActivityMainBinding
 private lateinit var HatKodu: String
 private lateinit var fusedLocationClient: FusedLocationProviderClient
 
-@Serializable
-data class OtoHatKonum (val kapino: String, val boylam: String, val enlem: String, val hatkodu: String, val guzergahkodu: String, var hatad: String, val yon: String, val son_konum_zamani: String, var yakinDurakKodu: String)
-
 class MainActivity : AppCompatActivity() {
     private val requestPermissionLauncher =
         registerForActivityResult(

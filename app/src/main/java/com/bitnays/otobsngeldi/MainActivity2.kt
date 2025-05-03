@@ -29,9 +29,8 @@ private lateinit var  HatKodu :String
 private val client = OkHttpClient()
 private var durakInfoList = ArrayList<Durak>()
 private var intentString: String? = null
+
 class MainActivity2 : AppCompatActivity() {
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityMain2Binding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
@@ -73,9 +72,10 @@ class MainActivity2 : AppCompatActivity() {
             try {
                 val response = client.newCall(request).execute()
                 if (response.isSuccessful){
-                    runOnUiThread { var responseBody = response.body?.string()
-                        xmlParser(responseBody.toString())  }
-
+                    runOnUiThread {
+                        var responseBody = response.body?.string()
+                        xmlParser(responseBody.toString())
+                    }
 
                 }
                 else{
@@ -100,6 +100,7 @@ class MainActivity2 : AppCompatActivity() {
         var durakIsım:String = ""
         var durakKod:String = ""
         var siraNo: String = ""
+        var yon: String = ""
         var factory = XmlPullParserFactory.newInstance()
         val parser = factory.newPullParser()
         parser.setInput(StringReader(text))
@@ -109,10 +110,13 @@ class MainActivity2 : AppCompatActivity() {
             {
                 XmlPullParser.START_TAG -> {
                     when (parser.name) {
+                        "YON"->{
+                            parser.next()
+                            yon = parser.text
+                        }
                         "SIRANO"->{
                             parser.next()
                             siraNo = parser.text
-
                         }
                         "DURAKKODU"->{
                             parser.next()
@@ -121,7 +125,7 @@ class MainActivity2 : AppCompatActivity() {
                         "DURAKADI"->{
                             parser.next()
                             durakKod = parser.text
-                            durakInfoList.add(Durak(siraNo,durakIsım,durakKod))
+                            durakInfoList.add(Durak(yon,siraNo,durakIsım,durakKod))
                         }
                     }
                 }
@@ -129,17 +133,24 @@ class MainActivity2 : AppCompatActivity() {
             eventType = parser.next()
         }
         createList()
+        durakList()
     }
     fun createList()
     {
         OtoHatKonumList = jsonDecode(intentString.toString())
         OtoHatKonumList.forEach { hat ->
             val durakName = durakInfoList.find { it.DURAKKODU ==  hat.yakinDurakKodu }
-            hat.yakinDurakKodu = durakName?.DURAKADI.toString()+hat.yakinDurakKodu
+            hat.yakinDurakKodu = durakName?.DURAKADI.toString()//+hat.yakinDurakKodu
         }
         val adapter =  OtobusAdapter(OtoHatKonumList)
         binding.recylervi.layoutManager = LinearLayoutManager(this)
         binding.recylervi.adapter = adapter
+    }
+    fun durakList()
+    {
+        val adapter =  DurakAdapter(durakInfoList)
+        binding.recylerview2.layoutManager = LinearLayoutManager(this)
+        binding.recylerview2.adapter = adapter
     }
     companion object {
         val MEDIA_TYPE_XML = "text/xml; charset=utf-8".toMediaType()
