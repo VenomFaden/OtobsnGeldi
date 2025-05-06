@@ -21,6 +21,7 @@ class OtobusAdapter(val otobusListesi: ArrayList<OtoHatKonum>) : RecyclerView.Ad
         holder.binding.KapiNo.text = otobusListesi.get(position).kapino.toString()
         holder.binding.durakIsmi.text = otobusListesi.get(position).yakinDurakKodu.toString()
         holder.binding.GidisYonu.text = otobusListesi.get(position).yon.toString()
+
     }
 
     // Return the size of your dataset (invoked by the layout manager)

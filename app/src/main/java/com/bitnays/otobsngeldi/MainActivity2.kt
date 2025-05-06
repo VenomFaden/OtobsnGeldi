@@ -1,13 +1,15 @@
 package com.bitnays.otobsngeldi
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
-import android.util.Xml
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,6 +27,16 @@ import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.StringReader
 import androidx.core.graphics.toColorInt
+import android.Manifest
+import android.content.Context
+import android.location.Location
+import android.util.AttributeSet
+import android.view.View
+import androidx.annotation.RequiresPermission
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import kotlin.math.sqrt
+
 
 private lateinit var binding: ActivityMain2Binding
 private var OtoHatKonumList = ArrayList<OtoHatKonum>()
@@ -32,10 +44,23 @@ private lateinit var  HatKodu :String
 private val client = OkHttpClient()
 private var durakInfoList = ArrayList<Durak>()
 private var intentString: String? = null
-private var durakInfoListD = ArrayList<Durak>()
+private var durakInfoListD =  ArrayList<Durak>()
 private var durakInfoListG = ArrayList<Durak>()
+private lateinit var fusedLocationClient: FusedLocationProviderClient
+private var locationFine: Location? = null
+private var enYakinDurak: Durak? = null
 class MainActivity2 : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        val requestPermissionLauncher = registerForActivityResult(RequestPermission())
+        { isGranted: Boolean ->
+                if (isGranted){
+                    getLocation()
+                }
+                else{
+                    Toast.makeText(this, "Konum izni verilmedi", Toast.LENGTH_SHORT).show()
+                }
+        }
         binding = ActivityMain2Binding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -45,19 +70,35 @@ class MainActivity2 : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
         var intent: Intent = getIntent()
         intentString = intent.getStringExtra("intentString")
         HatKodu = intent.getStringExtra("hatkodu").toString()
         getXML()
         binding.GidisDonusSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
+            if (isChecked)
+            {
                 durakList(durakInfoListD)
                 binding.GidisDonusSwitch.thumbTintList = ColorStateList.valueOf("#F44336".toColorInt())
-            } else {
 
-                binding.GidisDonusSwitch.thumbTintList = ColorStateList.valueOf("#4CAF50".toColorInt())
+            }
+            else {
                 durakList(durakInfoListG)
+                binding.GidisDonusSwitch.thumbTintList = ColorStateList.valueOf("#4CAF50".toColorInt())
+            }
+        }
+        when {
+            ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
+                if (locationFine == null)
+                {
+                    getLocation()
+                }
+            }
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                this, Manifest.permission.ACCESS_FINE_LOCATION) -> {
+            }
+            else -> {
+                requestPermissionLauncher.launch(
+                    Manifest.permission.ACCESS_FINE_LOCATION)
             }
         }
     }
@@ -66,11 +107,12 @@ class MainActivity2 : AppCompatActivity() {
 
 
     }
-
     override fun onPause() {
         super.onPause()
         durakInfoList.clear()
-        println("onPause")
+        durakInfoListD.clear()
+        durakInfoListG.clear()
+
     }
     fun getXML()
     {
@@ -95,10 +137,9 @@ class MainActivity2 : AppCompatActivity() {
                     runOnUiThread {
                         var responseBody = response.body?.string()
                         xmlParser(responseBody.toString())
-                        otobusListSlicer()
-                        durakList(durakInfoListG)
-                    }
 
+
+                    }
                 }
                 else{
                     runOnUiThread {
@@ -112,6 +153,16 @@ class MainActivity2 : AppCompatActivity() {
                 }
             }
         }
+    }
+    @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+    fun getLocation()
+    {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location : Location? ->
+                locationFine = location
+                println("location:"+location)
+            }
     }
     fun jsonDecode(text: String): ArrayList<OtoHatKonum>
     {
@@ -133,7 +184,6 @@ class MainActivity2 : AppCompatActivity() {
             when(eventType)
             {
                 XmlPullParser.START_TAG -> {
-                    // println(parser.name+"0")
                     when (parser.name) {
                         "YON"->{
                             parser.next()
@@ -165,32 +215,60 @@ class MainActivity2 : AppCompatActivity() {
             }
             eventType = parser.next()
         }
+        otobusListSlicer()
         createList()
+        durakList(durakInfoListG)
     }
     fun otobusListSlicer()
     {
-        var arrayListSize = durakInfoList.size
-        durakInfoListD= ArrayList<Durak>(durakInfoList.slice(0 until arrayListSize / 2))
-        durakInfoListG = ArrayList<Durak>(durakInfoList.slice(arrayListSize / 2 until arrayListSize))
+        var durakInfoListDA = durakInfoList.filter { it.YON == "D" }
+        var durakInfoListGA = durakInfoList.filter { it.YON == "G" }
+        durakInfoListDA.forEach { durak -> durakInfoListD.add(durak) }
+        durakInfoListGA.forEach { durak -> durakInfoListG.add(durak) }
     }
     fun createList()
     {
         OtoHatKonumList = jsonDecode(intentString.toString())
         OtoHatKonumList.forEach { hat ->
             val durakName = durakInfoList.find { it.DURAKKODU ==  hat.yakinDurakKodu }
-            hat.yakinDurakKodu = durakName?.DURAKADI.toString()//+hat.yakinDurakKodu
+            hat.yakinDurakKodu = durakName?.DURAKADI.toString()
         }
         val adapter =  OtobusAdapter(OtoHatKonumList)
         binding.recylervi.layoutManager = LinearLayoutManager(this)
         binding.recylervi.adapter = adapter
     }
+
     fun durakList(arrayList: ArrayList<Durak>)
     {
-        val adapter =  DurakAdapter(arrayList)
+        var sonDurak = arrayList.lastOrNull()?.DURAKADI
+        OtoHatKonumList.forEach { oto ->
+            val durakIndex = arrayList.indexOfFirst { it.DURAKADI == oto.yakinDurakKodu && sonDurak == oto.yon.toString() }
+            if(durakIndex != -1 )
+            {
+                arrayList[durakIndex].otobusVar = true
+                println(durakIndex)
+            }
+        }
+        if (locationFine != null)
+        {
+            enYakinDurak = findNearestLocation(arrayList, locationFine!!)
+            binding.yakinDurak.text ="Size en yakın durak: "+ enYakinDurak?.DURAKADI.toString()
+
+        }
+        val adapter =  DurakAdapter(arrayList, enYakinDurak)
         binding.recylerview2.layoutManager = LinearLayoutManager(this)
         binding.recylerview2.adapter = adapter
+
     }
     companion object {
         val MEDIA_TYPE_XML = "text/xml; charset=utf-8".toMediaType()
     }
-}
+    fun findNearestLocation(arrayList: ArrayList<Durak>, fineLocation: Location): Durak? {
+        return arrayList.minByOrNull { durak ->
+                val x = durak.XKOORDINATI.toDouble() - fineLocation.longitude.toDouble()
+                val y = durak.YKOORDINATI.toDouble() - fineLocation.latitude.toDouble()
+                sqrt(x * x + y * y) // double mesafe
+            }
+        }
+    }
+

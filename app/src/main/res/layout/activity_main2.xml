@@ -21,26 +21,27 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recylervi"
-        android:layout_width="wrap_content"
-        android:layout_height="366dp"
+        android:layout_width="407dp"
+        android:layout_height="255dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.061">
+        app:layout_constraintVertical_bias="0.165">
 
     </androidx.recyclerview.widget.RecyclerView>
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout"
+        android:layout_width="118dp"
+        android:layout_height="30dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.555">
+        app:layout_constraintVertical_bias="0.525">
 
         <TextView
             android:id="@+id/gidisTextView"
@@ -64,5 +65,16 @@
             android:text="Dönüş" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/yakinDurak"
+        android:layout_width="344dp"
+        android:layout_height="48dp"
+        android:text="yakinDurak"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/recylervi"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.annotation.RequiresPermission
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -22,7 +23,6 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -37,15 +37,10 @@ private lateinit var binding: ActivityMainBinding
 private lateinit var HatKodu: String
 private lateinit var fusedLocationClient: FusedLocationProviderClient
 
+
+
 class MainActivity : AppCompatActivity() {
-    private val requestPermissionLauncher =
-        registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
-        ) { isGranted: Boolean ->
-            if (isGranted) {
-                // Permission is granted. Continue the action or workflow in your app.
-            }
-        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -81,8 +76,7 @@ class MainActivity : AppCompatActivity() {
                         // Sonucu UI thread üzerinde işlemek için
                         runOnUiThread {
                             var responseBody = response.body?.string()
-                            println("Başarılı: ${responseBody}")
-                            xml_parser(responseBody.toString())
+                            xmlParser(responseBody.toString())
                         }
                     } else {
                         // Hata durumunda UI thread üzerinde işlemek için
@@ -100,43 +94,18 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
     }
     @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onStart() {
         super.onStart()
-        getLocationPermission(binding.root)
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location : Location? ->
-                Log.d("location", location.toString())
-            }
     }
-    fun getLocationPermission(view: View)
+    fun xmlParser(xmlString: String)
     {
-        when {
-            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
-                Log.d("permission", "1")
-            }
-            ActivityCompat.shouldShowRequestPermissionRationale(
-                this, Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                Snackbar.make(view, "Permission is needed", Snackbar.LENGTH_INDEFINITE).setAction(
-                    "İzin ver", View.OnClickListener {
-                        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                    }
-                ).show()
-            }
-            else -> {
-                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                Log.d("permission", "3")
-            }
-        }
-    }
-    fun xml_parser(xmlString: String)
-    {
-        var xml_data = xmlString
+        var xmldata = xmlString
         var factory = XmlPullParserFactory.newInstance()
         var parser = factory.newPullParser()
-        parser.setInput(StringReader(xml_data))
+        parser.setInput(StringReader(xmldata))
 
         var eventType = parser.eventType
         while (eventType != XmlPullParser.END_DOCUMENT)
