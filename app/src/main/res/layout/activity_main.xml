@@ -12,17 +12,20 @@
         android:id="@+id/editTextText"
         android:layout_width="236dp"
         android:layout_height="59dp"
+        android:background="#1A1A1B"
         android:ems="10"
-        android:hint="HatNo"
+        android:foregroundTint="#4B1515"
+        android:hint="Otobüs hattı yazınız"
         android:inputType="text"
         android:textColor="#FFFFFF"
         android:textColorHint="#FFFFFF"
+        app:circularflow_radiusInDP="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.374" />
+        app:layout_constraintVertical_bias="0.373" />
 
     <Button
         android:id="@+id/button"
@@ -30,10 +33,22 @@
         android:layout_height="59dp"
         android:layout_marginTop="76dp"
         android:layout_marginEnd="60dp"
-        android:text="Button"
+        android:text="Ara"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/editTextText"
         app:layout_constraintTop_toBottomOf="@+id/editTextText"
         app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Version 0.0.2 Venom 7.05.2025"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button"
+        app:layout_constraintVertical_bias="0.876" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

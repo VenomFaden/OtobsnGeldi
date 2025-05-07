@@ -23,7 +23,7 @@ class DurakAdapter(val durakListesi: ArrayList<Durak>, val enYakinDUrak: Durak?)
             "D" -> R.drawable.donus
             else -> R.drawable.ic_launcher_foreground
         }
-        println(enYakinDUrak?.DURAKADI+" "+durakListesi.get(position).DURAKADI)
+        //println(enYakinDUrak?.DURAKADI+" "+durakListesi.get(position).DURAKADI)
         if (enYakinDUrak?.DURAKADI == durakListesi.get(position).DURAKADI)
         {//#4CAF50
             holder.binding.yolcuYakinDurak.text = "Size en yakın durak"

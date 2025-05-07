@@ -28,29 +28,25 @@ import org.xmlpull.v1.XmlPullParserFactory
 import java.io.StringReader
 import androidx.core.graphics.toColorInt
 import android.Manifest
-import android.content.Context
 import android.location.Location
-import android.util.AttributeSet
-import android.view.View
 import androidx.annotation.RequiresPermission
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import kotlin.math.abs
 import kotlin.math.sqrt
 
-
-private lateinit var binding: ActivityMain2Binding
-private var OtoHatKonumList = ArrayList<OtoHatKonum>()
-private lateinit var  HatKodu :String
-private val client = OkHttpClient()
-private var durakInfoList = ArrayList<Durak>()
-private var intentString: String? = null
-private var durakInfoListD =  ArrayList<Durak>()
-private var durakInfoListG = ArrayList<Durak>()
-private lateinit var fusedLocationClient: FusedLocationProviderClient
-private var locationFine: Location? = null
-private var enYakinDurak: Durak? = null
 class MainActivity2 : AppCompatActivity() {
-
+    private lateinit var binding: ActivityMain2Binding
+    private var OtoHatKonumList = ArrayList<OtoHatKonum>()
+    private lateinit var  HatKodu :String
+    private val client = OkHttpClient()
+    private var durakInfoList = ArrayList<Durak>()
+    private var intentString: String? = null
+    private var durakInfoListD =  ArrayList<Durak>()
+    private var durakInfoListG = ArrayList<Durak>()
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var locationFine: Location? = null
+    private var enYakinDurak: Durak? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         val requestPermissionLauncher = registerForActivityResult(RequestPermission())
         { isGranted: Boolean ->
@@ -105,14 +101,12 @@ class MainActivity2 : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-
     }
     override fun onPause() {
         super.onPause()
         durakInfoList.clear()
         durakInfoListD.clear()
         durakInfoListG.clear()
-
     }
     fun getXML()
     {
@@ -137,8 +131,6 @@ class MainActivity2 : AppCompatActivity() {
                     runOnUiThread {
                         var responseBody = response.body?.string()
                         xmlParser(responseBody.toString())
-
-
                     }
                 }
                 else{
@@ -219,6 +211,9 @@ class MainActivity2 : AppCompatActivity() {
         createList()
         durakList(durakInfoListG)
     }
+    companion object {
+        val MEDIA_TYPE_XML = "text/xml; charset=utf-8".toMediaType()
+    }
     fun otobusListSlicer()
     {
         var durakInfoListDA = durakInfoList.filter { it.YON == "D" }
@@ -233,6 +228,7 @@ class MainActivity2 : AppCompatActivity() {
             val durakName = durakInfoList.find { it.DURAKKODU ==  hat.yakinDurakKodu }
             hat.yakinDurakKodu = durakName?.DURAKADI.toString()
         }
+
         val adapter =  OtobusAdapter(OtoHatKonumList)
         binding.recylervi.layoutManager = LinearLayoutManager(this)
         binding.recylervi.adapter = adapter
@@ -246,29 +242,40 @@ class MainActivity2 : AppCompatActivity() {
             if(durakIndex != -1 )
             {
                 arrayList[durakIndex].otobusVar = true
-                println(durakIndex)
             }
         }
         if (locationFine != null)
         {
             enYakinDurak = findNearestLocation(arrayList, locationFine!!)
             binding.yakinDurak.text ="Size en yakın durak: "+ enYakinDurak?.DURAKADI.toString()
+            findNearestOtobus(arrayList)
+
 
         }
         val adapter =  DurakAdapter(arrayList, enYakinDurak)
         binding.recylerview2.layoutManager = LinearLayoutManager(this)
         binding.recylerview2.adapter = adapter
 
+
+
+
     }
-    companion object {
-        val MEDIA_TYPE_XML = "text/xml; charset=utf-8".toMediaType()
+    fun findNearestOtobus(arrayList: ArrayList<Durak>,)/*: OtoHatKonum?*/ {
+        var durakFarki: Int? = 0
+        val filterArrayList = arrayList.filter { it.otobusVar == true &&  (enYakinDurak?.SIRANO?.toInt() ?: 0) - (it.SIRANO?.toInt() ?: 0) > 0 }
+        val nearestOtobusDurak = filterArrayList.minByOrNull { durak ->
+             (enYakinDurak?.SIRANO?.toInt() ?: 0) - durak.SIRANO.toInt()
+        }.also { it ->
+            durakFarki = (enYakinDurak?.SIRANO?.toInt() ?: 0) - (it?.SIRANO?.toInt() ?: 0 )
+        }
+        println(nearestOtobusDurak.toString()+"  "+ durakFarki)
+        binding.nearOtobus.text = "Size yakın otobüs "+durakFarki+" durak geride".toString()
     }
     fun findNearestLocation(arrayList: ArrayList<Durak>, fineLocation: Location): Durak? {
         return arrayList.minByOrNull { durak ->
                 val x = durak.XKOORDINATI.toDouble() - fineLocation.longitude.toDouble()
                 val y = durak.YKOORDINATI.toDouble() - fineLocation.latitude.toDouble()
                 sqrt(x * x + y * y) // double mesafe
-            }
         }
     }
-
+}
