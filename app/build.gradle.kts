@@ -42,6 +42,8 @@ android {
 }
 
 dependencies {
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation(libs.androidx.foundation.android)
     val nav_version = "2.8.9"
     // Jetpack Compose integration
     implementation("androidx.navigation:navigation-compose:$nav_version")

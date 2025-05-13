@@ -2,24 +2,14 @@ package com.bitnays.otobsngeldi
 
 import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.annotation.RequiresPermission
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bitnays.otobsngeldi.databinding.ActivityMainBinding
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,14 +23,11 @@ import org.xmlpull.v1.XmlPullParserFactory
 import java.io.StringReader
 
 private val client = OkHttpClient()
-private lateinit var binding: ActivityMainBinding
+
 private lateinit var HatKodu: String
-private lateinit var fusedLocationClient: FusedLocationProviderClient
-
-
 
 class MainActivity : AppCompatActivity() {
-
+    private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -74,8 +61,8 @@ class MainActivity : AppCompatActivity() {
                     val response = client.newCall(request).execute()
                     if (response.isSuccessful) {
                         // Sonucu UI thread üzerinde işlemek için
+                        var responseBody = response.body?.string()
                         runOnUiThread {
-                            var responseBody = response.body?.string()
                             xmlParser(responseBody.toString())
                         }
                     } else {
@@ -94,7 +81,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
     }
     @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onStart() {
@@ -110,21 +96,19 @@ class MainActivity : AppCompatActivity() {
         var eventType = parser.eventType
         while (eventType != XmlPullParser.END_DOCUMENT)
         {
-            //println("saa"+parser.columnNumber+" "+parser.text)
             when(eventType){
-
                 XmlPullParser.TEXT ->{
                     var text = parser.text
+                    Log.d("test",text)
                     sendIntentToList(text)
                 }
-
             }
             eventType = parser.next()
         }
     }
     fun sendIntentToList(intentString: String)
     {
-        var intent: Intent = Intent(this, MainActivity2::class.java)
+        var intent = Intent(this, MainActivity2::class.java)
         intent.putExtra("intentString", intentString)
         intent.putExtra("hatkodu",HatKodu)
         startActivity(intent)

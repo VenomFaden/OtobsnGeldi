@@ -1,54 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#23262A"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
     tools:context=".MainActivity2">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recylerview2"
-        android:layout_width="wrap_content"
-        android:layout_height="312dp"
-        android:layout_marginTop="28dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <TextView
+        android:id="@+id/detaySayfa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hat Durak Bilgisi"
+        android:textAlignment="textStart"
+        android:textColor="#FFFFFF"
+        android:textSize="34sp" />
+
+    <TextView
+        android:id="@+id/nearOtobus"
+        android:layout_width="408dp"
+        android:layout_height="54dp"
+        android:text="Size en yakın otobüs"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/recylervi"
-        app:layout_constraintVertical_bias="0.666" />
+        app:layout_constraintVertical_bias="1.0" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recylervi"
-        android:layout_width="405dp"
-        android:layout_height="193dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <TextView
+        android:id="@+id/yakinDurak"
+        android:layout_width="411dp"
+        android:layout_height="54dp"
+        android:text="yakinDurak"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/recylervi"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.165">
-
-    </androidx.recyclerview.widget.RecyclerView>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="127dp"
-        android:layout_height="32dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.525">
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:gravity="center"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/gidisTextView"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
-            android:text="Gidiş" />
+            android:text="Gidiş"
+            android:textColor="#FFFFFF" />
 
         <Switch
             android:id="@+id/GidisDonusSwitch"
@@ -62,30 +69,23 @@
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
-            android:text="Dönüş" />
+            android:text="Dönüş"
+            android:textColor="#FFFFFF" />
 
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/yakinDurak"
-        android:layout_width="344dp"
-        android:layout_height="48dp"
-        android:text="yakinDurak"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/recylervi"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/nearOtobus"
-        android:layout_width="377dp"
-        android:layout_height="43dp"
-        android:text="Size en yakın otobüs"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.529"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recylervi" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/refreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recylerview2"
+            android:layout_width="411dp"
+            android:layout_height="534dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/recylervi"
+            app:layout_constraintVertical_bias="0.935" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</LinearLayout>

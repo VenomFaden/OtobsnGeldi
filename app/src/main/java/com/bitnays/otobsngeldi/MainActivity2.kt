@@ -29,13 +29,17 @@ import java.io.StringReader
 import androidx.core.graphics.toColorInt
 import android.Manifest
 import android.location.Location
+import android.util.Log
+import android.view.View
 import androidx.annotation.RequiresPermission
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import kotlin.math.abs
+import com.google.android.material.snackbar.Snackbar
 import kotlin.math.sqrt
 
 class MainActivity2 : AppCompatActivity() {
+
     private lateinit var binding: ActivityMain2Binding
     private var OtoHatKonumList = ArrayList<OtoHatKonum>()
     private lateinit var  HatKodu :String
@@ -52,9 +56,12 @@ class MainActivity2 : AppCompatActivity() {
         { isGranted: Boolean ->
                 if (isGranted){
                     getLocation()
+                    recreate()
                 }
                 else{
+                    setInvisible()
                     Toast.makeText(this, "Konum izni verilmedi", Toast.LENGTH_SHORT).show()
+                    Log.d("test","11")
                 }
         }
         binding = ActivityMain2Binding.inflate(layoutInflater)
@@ -65,6 +72,12 @@ class MainActivity2 : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+        var swiperefreshlayout: SwipeRefreshLayout =  binding.refreshLayout
+        swiperefreshlayout.setOnRefreshListener {
+            getXML()
+            //recreate()
+            swiperefreshlayout.setRefreshing(false);
         }
         var intent: Intent = getIntent()
         intentString = intent.getStringExtra("intentString")
@@ -78,6 +91,7 @@ class MainActivity2 : AppCompatActivity() {
 
             }
             else {
+                println("checked")
                 durakList(durakInfoListG)
                 binding.GidisDonusSwitch.thumbTintList = ColorStateList.valueOf("#4CAF50".toColorInt())
             }
@@ -88,19 +102,22 @@ class MainActivity2 : AppCompatActivity() {
                 {
                     getLocation()
                 }
+                Log.d("test","3")
             }
-            ActivityCompat.shouldShowRequestPermissionRationale(
-                this, Manifest.permission.ACCESS_FINE_LOCATION) -> {
+            ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                setInvisible()
+                Snackbar.make(binding.main, "Konum izni gerekli", Snackbar.LENGTH_INDEFINITE).setAction("İzin ver"){
+                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                }.show()
             }
             else -> {
-                requestPermissionLauncher.launch(
-                    Manifest.permission.ACCESS_FINE_LOCATION)
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+
             }
         }
     }
     override fun onStart() {
         super.onStart()
-
     }
     override fun onPause() {
         super.onPause()
@@ -128,8 +145,9 @@ class MainActivity2 : AppCompatActivity() {
             try {
                 val response = client.newCall(request).execute()
                 if (response.isSuccessful){
+                    var responseBody = response.body?.string()
                     runOnUiThread {
-                        var responseBody = response.body?.string()
+
                         xmlParser(responseBody.toString())
                     }
                 }
@@ -153,7 +171,6 @@ class MainActivity2 : AppCompatActivity() {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location : Location? ->
                 locationFine = location
-                println("location:"+location)
             }
     }
     fun jsonDecode(text: String): ArrayList<OtoHatKonum>
@@ -162,6 +179,9 @@ class MainActivity2 : AppCompatActivity() {
     }
     fun xmlParser(text:String)
     {
+        durakInfoList.clear()
+        durakInfoListD.clear()
+        durakInfoListG.clear()
         var durakIsım:String = ""
         var durakKod:String = ""
         var siraNo: String = ""
@@ -209,7 +229,13 @@ class MainActivity2 : AppCompatActivity() {
         }
         otobusListSlicer()
         createList()
-        durakList(durakInfoListG)
+        if (binding.GidisDonusSwitch.isChecked)
+        {
+            durakList(durakInfoListD)
+        }
+        else{
+            durakList(durakInfoListG)
+        }
     }
     companion object {
         val MEDIA_TYPE_XML = "text/xml; charset=utf-8".toMediaType()
@@ -224,16 +250,15 @@ class MainActivity2 : AppCompatActivity() {
     fun createList()
     {
         OtoHatKonumList = jsonDecode(intentString.toString())
-        OtoHatKonumList.forEach { hat ->
+        OtoHatKonumList.forEachIndexed {i, hat ->
             val durakName = durakInfoList.find { it.DURAKKODU ==  hat.yakinDurakKodu }
             hat.yakinDurakKodu = durakName?.DURAKADI.toString()
+            println(OtoHatKonumList[i])
         }
-
         val adapter =  OtobusAdapter(OtoHatKonumList)
-        binding.recylervi.layoutManager = LinearLayoutManager(this)
-        binding.recylervi.adapter = adapter
+        //binding.recylervi.layoutManager = LinearLayoutManager(this)
+        //binding.recylervi.adapter = adapter
     }
-
     fun durakList(arrayList: ArrayList<Durak>)
     {
         var sonDurak = arrayList.lastOrNull()?.DURAKADI
@@ -249,16 +274,10 @@ class MainActivity2 : AppCompatActivity() {
             enYakinDurak = findNearestLocation(arrayList, locationFine!!)
             binding.yakinDurak.text ="Size en yakın durak: "+ enYakinDurak?.DURAKADI.toString()
             findNearestOtobus(arrayList)
-
-
         }
         val adapter =  DurakAdapter(arrayList, enYakinDurak)
         binding.recylerview2.layoutManager = LinearLayoutManager(this)
         binding.recylerview2.adapter = adapter
-
-
-
-
     }
     fun findNearestOtobus(arrayList: ArrayList<Durak>,)/*: OtoHatKonum?*/ {
         var durakFarki: Int? = 0
@@ -277,5 +296,10 @@ class MainActivity2 : AppCompatActivity() {
                 val y = durak.YKOORDINATI.toDouble() - fineLocation.latitude.toDouble()
                 sqrt(x * x + y * y) // double mesafe
         }
+    }
+    fun setInvisible()
+    {
+        binding.yakinDurak.visibility = View.GONE
+        binding.nearOtobus.visibility = View.GONE
     }
 }
