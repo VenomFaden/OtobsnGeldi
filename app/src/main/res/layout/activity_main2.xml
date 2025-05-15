@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -10,44 +10,63 @@
     android:orientation="vertical"
     tools:context=".MainActivity2">
 
-    <TextView
-        android:id="@+id/detaySayfa"
+    <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hat Durak Bilgisi"
-        android:textAlignment="textStart"
-        android:textColor="#FFFFFF"
-        android:textSize="34sp" />
-
-    <TextView
-        android:id="@+id/nearOtobus"
-        android:layout_width="408dp"
-        android:layout_height="54dp"
-        android:text="Size en yakın otobüs"
-        android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        android:orientation="vertical"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recylervi"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/yakinDurak"
-        android:layout_width="411dp"
-        android:layout_height="54dp"
-        android:text="yakinDurak"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/recylervi"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/detaySayfa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Hat Durak Bilgisi"
+            android:textAlignment="textStart"
+            android:textColor="#FFFFFF"
+            android:textSize="34sp" />
+
+        <TextView
+            android:id="@+id/nearOtobus"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:text="Size en yakın otobüs"
+            android:textColor="#FFFFFF"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/recylervi"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <TextView
+            android:id="@+id/yakinDurak"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:text="yakinDurak"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@+id/recylervi"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
         android:layout_height="44dp"
+        android:layout_marginBottom="12dp"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/refreshLayout"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.905"
+        tools:layout_editor_absoluteX="-28dp">
 
         <TextView
             android:id="@+id/gidisTextView"
@@ -73,10 +92,16 @@
             android:textColor="#FFFFFF" />
 
     </LinearLayout>
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refreshLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="439dp"
+        android:layout_height="412dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recylerview2"
             android:layout_width="411dp"
@@ -88,4 +113,17 @@
             app:layout_constraintTop_toBottomOf="@+id/recylervi"
             app:layout_constraintVertical_bias="0.935" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-</LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="130dp"
+        android:layout_height="119dp"
+        android:indeterminateTint="#FFA500"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.398" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

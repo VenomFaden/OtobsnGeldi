@@ -39,7 +39,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlin.math.sqrt
 
 class MainActivity2 : AppCompatActivity() {
-
+    private lateinit var filterArrayList: ArrayList<Durak>
     private lateinit var binding: ActivityMain2Binding
     private var OtoHatKonumList = ArrayList<OtoHatKonum>()
     private lateinit var  HatKodu :String
@@ -86,13 +86,12 @@ class MainActivity2 : AppCompatActivity() {
         binding.GidisDonusSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked)
             {
-                durakList(durakInfoListD)
+                durakList(durakInfoList)
                 binding.GidisDonusSwitch.thumbTintList = ColorStateList.valueOf("#F44336".toColorInt())
 
             }
             else {
-                println("checked")
-                durakList(durakInfoListG)
+                durakList(durakInfoList)
                 binding.GidisDonusSwitch.thumbTintList = ColorStateList.valueOf("#4CAF50".toColorInt())
             }
         }
@@ -227,7 +226,11 @@ class MainActivity2 : AppCompatActivity() {
             }
             eventType = parser.next()
         }
-        otobusListSlicer()
+        binding.refreshLayout.visibility = View.VISIBLE
+        binding.linearLayout2.visibility = View.VISIBLE
+        binding.linearLayout3.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.INVISIBLE
+        //otobusListSlicer()
         createList()
         if (binding.GidisDonusSwitch.isChecked)
         {
@@ -261,6 +264,7 @@ class MainActivity2 : AppCompatActivity() {
     }
     fun durakList(arrayList: ArrayList<Durak>)
     {
+
         var sonDurak = arrayList.lastOrNull()?.DURAKADI
         OtoHatKonumList.forEach { oto ->
             val durakIndex = arrayList.indexOfFirst { it.DURAKADI == oto.yakinDurakKodu && sonDurak == oto.yon.toString() }
@@ -269,13 +273,26 @@ class MainActivity2 : AppCompatActivity() {
                 arrayList[durakIndex].otobusVar = true
             }
         }
+        when(binding.GidisDonusSwitch.isChecked){
+            true ->{
+                filterArrayList = durakInfoList.filter { it.YON == "D" } as ArrayList<Durak>
+            }
+            else -> {
+                filterArrayList = durakInfoList.filter { it.YON == "G" } as ArrayList<Durak>
+            }
+        }
         if (locationFine != null)
         {
-            enYakinDurak = findNearestLocation(arrayList, locationFine!!)
+            println(locationFine?.latitude)
+            enYakinDurak = findNearestLocation(filterArrayList, locationFine!!)
             binding.yakinDurak.text ="Size en yakın durak: "+ enYakinDurak?.DURAKADI.toString()
-            findNearestOtobus(arrayList)
+            findNearestOtobus(filterArrayList)
         }
-        val adapter =  DurakAdapter(arrayList, enYakinDurak)
+        else{
+            setInvisible()
+        }
+
+        val adapter =  DurakAdapter(filterArrayList, enYakinDurak)
         binding.recylerview2.layoutManager = LinearLayoutManager(this)
         binding.recylerview2.adapter = adapter
     }
