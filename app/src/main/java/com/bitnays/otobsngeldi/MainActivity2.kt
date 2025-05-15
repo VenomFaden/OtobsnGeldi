@@ -82,19 +82,22 @@ class MainActivity2 : AppCompatActivity() {
         var intent: Intent = getIntent()
         intentString = intent.getStringExtra("intentString")
         HatKodu = intent.getStringExtra("hatkodu").toString()
-        getXML()
+
         binding.GidisDonusSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked)
             {
-                durakList(durakInfoList)
+                println("sa")
+                durakList(durakInfoListD)
                 binding.GidisDonusSwitch.thumbTintList = ColorStateList.valueOf("#F44336".toColorInt())
 
             }
             else {
-                durakList(durakInfoList)
+                println("sa")
+                durakList(durakInfoListG)
                 binding.GidisDonusSwitch.thumbTintList = ColorStateList.valueOf("#4CAF50".toColorInt())
             }
         }
+        getXML()
         when {
             ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
                 if (locationFine == null)
@@ -146,7 +149,6 @@ class MainActivity2 : AppCompatActivity() {
                 if (response.isSuccessful){
                     var responseBody = response.body?.string()
                     runOnUiThread {
-
                         xmlParser(responseBody.toString())
                     }
                 }
@@ -230,7 +232,8 @@ class MainActivity2 : AppCompatActivity() {
         binding.linearLayout2.visibility = View.VISIBLE
         binding.linearLayout3.visibility = View.VISIBLE
         binding.progressBar.visibility = View.INVISIBLE
-        //otobusListSlicer()
+
+        otobusListSlicer()
         createList()
         if (binding.GidisDonusSwitch.isChecked)
         {
@@ -273,26 +276,19 @@ class MainActivity2 : AppCompatActivity() {
                 arrayList[durakIndex].otobusVar = true
             }
         }
-        when(binding.GidisDonusSwitch.isChecked){
-            true ->{
-                filterArrayList = durakInfoList.filter { it.YON == "D" } as ArrayList<Durak>
-            }
-            else -> {
-                filterArrayList = durakInfoList.filter { it.YON == "G" } as ArrayList<Durak>
-            }
-        }
+
         if (locationFine != null)
         {
             println(locationFine?.latitude)
-            enYakinDurak = findNearestLocation(filterArrayList, locationFine!!)
+            enYakinDurak = findNearestLocation(arrayList, locationFine!!)
             binding.yakinDurak.text ="Size en yakın durak: "+ enYakinDurak?.DURAKADI.toString()
-            findNearestOtobus(filterArrayList)
+            findNearestOtobus(arrayList)
         }
         else{
             setInvisible()
         }
 
-        val adapter =  DurakAdapter(filterArrayList, enYakinDurak)
+        val adapter =  DurakAdapter(arrayList, enYakinDurak)
         binding.recylerview2.layoutManager = LinearLayoutManager(this)
         binding.recylerview2.adapter = adapter
     }
