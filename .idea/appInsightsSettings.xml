@@ -9,10 +9,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.bitnays.otobsngeldi" />
+                  <option name="mobileSdkAppId" value="1:931592929069:android:d1dd3244a9f44658719da4" />
+                  <option name="projectId" value="otobusun-geldi" />
+                  <option name="projectNumber" value="931592929069" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

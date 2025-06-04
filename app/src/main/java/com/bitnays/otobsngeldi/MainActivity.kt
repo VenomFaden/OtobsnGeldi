@@ -27,6 +27,7 @@ private val client = OkHttpClient()
 private lateinit var HatKodu: String
 
 class MainActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +43,7 @@ class MainActivity : AppCompatActivity() {
         }
         binding.button.setOnClickListener {
             HatKodu = binding.editTextText.text.toString()
+            
             CoroutineScope(Dispatchers.IO).launch {
                 val postBody = """
                     <?xml version='1.0' encoding='utf-8'?> 
@@ -81,6 +83,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
     }
     @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onStart() {
@@ -116,4 +119,5 @@ class MainActivity : AppCompatActivity() {
     companion object {
         val MEDIA_TYPE_XML = "text/xml; charset=utf-8".toMediaType()
     }
+
 }

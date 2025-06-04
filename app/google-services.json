@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "931592929069",
+    "project_id": "otobusun-geldi",
+    "storage_bucket": "otobusun-geldi.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:931592929069:android:d1dd3244a9f44658719da4",
+        "android_client_info": {
+          "package_name": "com.bitnays.otobsngeldi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuZVEAUIkOqNH0T95SOQXQdiv6QbaF86I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
