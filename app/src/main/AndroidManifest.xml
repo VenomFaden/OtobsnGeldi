@@ -17,6 +17,11 @@
         android:theme="@style/Theme.OtobüsünGeldi"
         tools:targetApi="31">
         <activity
+            android:name=".MainActivity3"
+            android:exported="false"
+            android:label="@string/title_activity_main3"
+            android:theme="@style/Theme.OtobüsünGeldi" />
+        <activity
             android:name=".MainActivity2"
             android:configChanges="orientation|screenSize"
             android:exported="false" />

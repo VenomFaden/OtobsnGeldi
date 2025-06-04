@@ -5,8 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.annotation.RequiresPermission
+import androidx.compose.material.Text
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bitnays.otobsngeldi.databinding.ActivityMainBinding
@@ -21,6 +23,7 @@ import okio.IOException
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.StringReader
+import androidx.compose.runtime.Composable
 
 private val client = OkHttpClient()
 
@@ -32,6 +35,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        var intent = Intent(this, MainActivity3::class.java)
+        //startActivity(intent)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
@@ -84,6 +89,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    }
+    @Composable
+    fun MessageCard(name: String) {
+        Text(text = "Hello $name!")
     }
 
     @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
