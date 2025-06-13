@@ -47,7 +47,8 @@ composeCompiler {
     stabilityConfigurationFile = rootProject.layout.projectDirectory.file("stability_config.conf")
 }
 dependencies {
-
+    implementation("com.google.android.gms:play-services-cronet:18.1.0")
+    implementation(libs.androidx.lifecycle.runtime.ktx.v240)
     implementation (libs.androidx.swiperefreshlayout)
     implementation(libs.androidx.coordinatorlayout)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -91,22 +92,12 @@ dependencies {
 
     // Choose one of the following:
     // Material Design 3
-    implementation("androidx.compose.material3:material3")
-    // or Material Design 2
-    implementation("androidx.compose.material:material")
+    implementation("androidx.compose.material3:material3:1.3.2")
     // or skip Material Design and build directly on top of foundational components
     implementation("androidx.compose.foundation:foundation")
     // or only import the main APIs for the underlying toolkit systems,
     // such as input and measurement/layout
     implementation("androidx.compose.ui:ui")
-
-    // Android Studio Preview support
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-
-    // UI Tests
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     // Optional - Included automatically by material, only add when you need
     // the icons but not the material library (e.g. when using Material3 or a
@@ -116,13 +107,12 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     // Optional - Add window size utils
     implementation("androidx.compose.material3.adaptive:adaptive")
+    implementation(libs.androidx.compose.material3.material3)
+    implementation("androidx.window:window:1.4.0")
 
-    // Optional - Integration with activities
-    implementation("androidx.activity:activity-compose:1.10.1")
-    // Optional - Integration with ViewModels
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
-    // Optional - Integration with LiveData
-    implementation("androidx.compose.runtime:runtime-livedata")
-    // Optional - Integration with RxJava
-    implementation("androidx.compose.runtime:runtime-rxjava2")
+
+
+    implementation("androidx.compose.material3:material3-window-size-class:1.3.2")
+    implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.4.0-alpha15")
+
 }

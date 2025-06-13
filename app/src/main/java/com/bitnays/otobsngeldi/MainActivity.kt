@@ -5,10 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.annotation.RequiresPermission
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bitnays.otobsngeldi.databinding.ActivityMainBinding
@@ -25,18 +24,15 @@ import org.xmlpull.v1.XmlPullParserFactory
 import java.io.StringReader
 import androidx.compose.runtime.Composable
 
-private val client = OkHttpClient()
-
-private lateinit var HatKodu: String
-
-
 class MainActivity : AppCompatActivity() {
-
+    private val client = OkHttpClient()
+    private lateinit var HatKodu: String
     private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         var intent = Intent(this, MainActivity3::class.java)
-        //startActivity(intent)
+        startActivity(intent)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
