@@ -43,7 +43,9 @@ import androidx.window.core.layout.WindowSizeClass
 import com.bitnays.otobsngeldi.ui.theme.OtobüsünGeldiTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import org.chromium.net.CronetEngine
+import org.chromium.net.CronetException
 import org.chromium.net.UploadDataProvider
 import org.chromium.net.UploadDataProviders
 import org.chromium.net.UrlRequest
@@ -57,7 +59,7 @@ import java.util.concurrent.Executors
 
 class MainActivity3 : ComponentActivity() {
     private lateinit var hatkodu: String
-
+    private var hatSeferSaatleriList = ArrayList<HatSeferSaatleri>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -65,8 +67,15 @@ class MainActivity3 : ComponentActivity() {
         val context = this
         lifecycleScope.launch(Dispatchers.IO)
         {
-            getSeferSaatleri(context,"251")
-            xmlParser("")
+            getSeferSaatleri(context,"251", onSuccess = {
+                    //Log.d("saaaaaaa",it)
+                    val parseredText = xmlParser(it)
+                    hatSeferSaatleriList = Json.decodeFromString<ArrayList<HatSeferSaatleri>>(parseredText.toString()) as ArrayList<HatSeferSaatleri>
+
+                    Log.d("123", hatSeferSaatleriList.get(1).HATADI.toString())
+            }, onError = {
+                Log.d("saaa",it.toString())
+            })
         }
         setContent {
             OtobüsünGeldiTheme {
@@ -83,7 +92,9 @@ fun SeferSaatleri() {
     }
 }
 
-fun getSeferSaatleri(context: Context, hatkodu: String)
+fun getSeferSaatleri(context: Context, hatkodu: String ,
+                     onSuccess: (String) -> Unit,
+                     onError: (CronetException?) -> Unit)
 {
     val postBody = """
         <?xml version="1.0" encoding="utf-8"?>
@@ -101,11 +112,10 @@ fun getSeferSaatleri(context: Context, hatkodu: String)
     val executor: Executor = Executors.newSingleThreadExecutor()
     val requestBuilder = cronetEngine.newUrlRequestBuilder(
         "https://api.ibb.gov.tr/iett/UlasimAnaVeri/PlanlananSeferSaati.asmx?wsdl",
-        RequestCallback(),
+        RequestCallback(onSuccess,onError),
         executor)
 
     val uploadDataProvider : UploadDataProvider = UploadDataProviders.create(postBody.toByteArray())
-
     requestBuilder
         .setHttpMethod("POST")
         .addHeader("Content-Type","text/xml; charset=utf-8")
@@ -113,7 +123,6 @@ fun getSeferSaatleri(context: Context, hatkodu: String)
         .setUploadDataProvider(uploadDataProvider,executor)
     val request: UrlRequest = requestBuilder.build()
     request.start()
-
 }
 fun xmlParser(stringdata: String): String?
 {

@@ -76,7 +76,6 @@ class MainActivity2 : AppCompatActivity() {
         var swiperefreshlayout: SwipeRefreshLayout =  binding.refreshLayout
         swiperefreshlayout.setOnRefreshListener {
             getXML()
-            //recreate()
             swiperefreshlayout.setRefreshing(false);
         }
         var intent: Intent = getIntent()

@@ -6,17 +6,17 @@ import java.nio.ByteBuffer
 
 class DataUploadDataProvider(private val data: ByteArray) : UploadDataProvider() {
     override fun getLength(): Long {
-            TODO("Not yet implemented")
+        return  0
     }
 
     override fun read(
         uploadDataSink: UploadDataSink?,
         byteBuffer: ByteBuffer?
     ) {
-        TODO("Not yet implemented")
+
     }
 
     override fun rewind(uploadDataSink: UploadDataSink?) {
-        TODO("Not yet implemented")
+
     }
 }

@@ -8,7 +8,8 @@ import java.nio.ByteBuffer
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 
-class RequestCallback : UrlRequest.Callback() {
+class RequestCallback(private val onResponse: (String) -> Unit,
+                      private val onError: (CronetException?) -> Unit ) : UrlRequest.Callback() {
     private var requestBody = StringBuilder()
     override fun onRedirectReceived(
         request: UrlRequest?,
@@ -52,7 +53,9 @@ class RequestCallback : UrlRequest.Callback() {
         request: UrlRequest?,
         info: UrlResponseInfo?
     ) {
+
         Log.d("saaa","4"+requestBody)
+        onResponse(requestBody.toString()) // Tam yanıtı MainActivity3'e aktar
     }
 
     override fun onFailed(
@@ -61,5 +64,6 @@ class RequestCallback : UrlRequest.Callback() {
         error: CronetException?
     ) {
         Log.d("saaa","5"+info.toString()+error.toString())
+        onError(error) // Hata durumunda MainActivity3'e bildir
     }
 }
