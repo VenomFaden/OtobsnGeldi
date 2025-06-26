@@ -1,97 +1,68 @@
 package com.bitnays.otobsngeldi
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Attachment
-import androidx.compose.material.icons.filled.Coffee
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Restaurant
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Snooze
-import androidx.compose.material.icons.filled.Work
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
-import androidx.compose.material.icons.outlined.Coffee
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.MarkEmailUnread
-import androidx.compose.material.icons.outlined.Restaurant
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Star
-import androidx.compose.material.icons.outlined.Work
 import androidx.compose.material3.AppBarRow
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ButtonGroupDefaults
-import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumTopAppBar
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.window.core.layout.WindowSizeClass
 import com.bitnays.otobsngeldi.ui.theme.OtobüsünGeldiTheme
@@ -110,67 +81,33 @@ import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
 class MainActivity3 : ComponentActivity() {
-    private lateinit var hatSeferSaatleriDirectionFiltered : ArrayList<HatSeferSaatleri>
     private lateinit var hatkodu: String
-    private var hatSeferSaatleriList = ArrayList<HatSeferSaatleri>()
+    private var hatSeferSaatleriList: (MutableList<HatSeferSaatleri>) = mutableStateListOf<HatSeferSaatleri>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false) // Sistem çubuklarını açıkça yönet
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         enableEdgeToEdge()
         hatkodu = intent.getStringExtra("hatkodu").toString()
         val context = this
-        lifecycleScope.launch(Dispatchers.IO)
-        {
-            getSeferSaatleri(context,"251", onSuccess = {
-                val parseredText = xmlParser(it)
-                hatSeferSaatleriList = Json.decodeFromString<ArrayList<HatSeferSaatleri>>(parseredText.toString()) as ArrayList<HatSeferSaatleri>
-
-                Log.d("123", hatSeferSaatleriList.get(1).HATADI.toString())
+        getSeferSaatleri(context,hatkodu, onResponse = {
+            val parseredText = xmlParser(it)
+            hatSeferSaatleriList.clear()
+            hatSeferSaatleriList.addAll(Json.decodeFromString<List<HatSeferSaatleri>>(parseredText.toString()))
             }, onError = {
-                Log.d("saaa",it.toString())
+                Toast.makeText(this,"Hata",Toast.LENGTH_LONG).show()
             })
-        }
+
         setContent {
             OtobüsünGeldiTheme {
-                //HelloScreen()
+
                 SeferSaatleriScreen()
+
             }
         }
     }
-
-
-
-
-    @Composable
-    fun HelloScreen() {
-        var name1 by rememberSaveable { mutableStateOf("d") }
-        Log.d("main3",name1)
-        HelloContent(
-            name = name1,
-            onNameChange = { name1 = it }
-        )
-    }
-
-    @Composable
-    fun HelloContent(name: String, onNameChange: (String) -> Unit) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "Hello, $name",
-                modifier = Modifier.padding(bottom = 8.dp),
-                style = MaterialTheme.typography.bodyMedium
-            )
-            OutlinedTextField(
-                value = name,
-                onValueChange = onNameChange,
-                label = { Text("Name") }
-            )
-        }
-    }
-
 fun getSeferSaatleri(context: Context, hatkodu: String ,
-                     onSuccess: (String) -> Unit,
-                     onError: (CronetException?) -> Unit)
-{
+                     onResponse: (String) -> Unit,
+                     onError: (CronetException?) -> Unit) {
     val postBody = """
         <?xml version="1.0" encoding="utf-8"?>
         <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
@@ -181,15 +118,12 @@ fun getSeferSaatleri(context: Context, hatkodu: String ,
         </soap:Body>
         </soap:Envelope>
     """.trimIndent()
-
     val myBuilder = CronetEngine.Builder(context)
     val cronetEngine: CronetEngine = myBuilder.build()
     val executor: Executor = Executors.newSingleThreadExecutor()
     val requestBuilder = cronetEngine.newUrlRequestBuilder(
         "https://api.ibb.gov.tr/iett/UlasimAnaVeri/PlanlananSeferSaati.asmx?wsdl",
-        RequestCallback(onSuccess,onError),
-        executor)
-
+        RequestCallback(onResponse,onError), executor)
     val uploadDataProvider : UploadDataProvider = UploadDataProviders.create(postBody.toByteArray())
     requestBuilder
         .setHttpMethod("POST")
@@ -220,29 +154,61 @@ fun xmlParser(stringdata: String): String?
 @Composable
 fun SeferSaatleriScreen() {
 
-    var Yon by rememberSaveable { mutableIntStateOf(0) }
-    var Gun by rememberSaveable { mutableIntStateOf(0) }
-    val deCodeGun =when(Gun) {
+    var yon by rememberSaveable { mutableIntStateOf(0) }
+    var gun by rememberSaveable { mutableIntStateOf(0) }
+    val deCodeGun = when(gun) {
         0 -> "I"
         1 -> "C"
         else -> "P"
     }
-    Log.d("main33","decode"+deCodeGun.toString())
-    var filteredList = hatSeferSaatleriList.filter{ if(Yon == 0)  it.SYON == "G" else it.SYON == "D"} as ArrayList<HatSeferSaatleri>
+    var filteredList = hatSeferSaatleriList.filter{ if(yon == 0)  it.SYON == "G" else it.SYON == "D"} as ArrayList<HatSeferSaatleri>
     filteredList = filteredList.filter { it.SGUNTIPI == deCodeGun } as ArrayList<HatSeferSaatleri>
-
-    Column(){
-        AppBar()
-        YonBUttons("gidiş","donüş", onCheckedChange = {Yon = it})
-        GunSecimiTab(modifier = Modifier.padding(0.dp), onSelectedChange = {Gun = it}, filteredList)
-        LazyColumn() {
-            items(filteredList.count()) { index ->
-                Text(text = "Item: "+filteredList.get(index).DT, color = Color(0xFFFFFFFF), fontSize = MaterialTheme.typography.bodyMedium.fontSize)
-                // HorizontalDivider(thickness = 2.dp)
+    Column{
+            AppBar()
+            YonBUttons(intent.getStringExtra("donus").toString(),intent.getStringExtra("gidis").toString(), onCheckedChange = {yon = it})
+            GunSecimiTab(modifier = Modifier.padding(0.dp), onSelectedChange = {gun = it}, filteredList)
+            SeferSaatleriList(filteredList)
+    }
+}
+@Composable
+fun SeferSaatleriList(list: ArrayList<HatSeferSaatleri>) {
+    val groupedList = list.groupBy { it.DT?.split(":")?.get(0) }
+    LazyColumn {
+        groupedList.forEach { (hour, itemsInHour) ->
+            item {
+                Column(modifier = Modifier.padding(5.dp)) {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        ),
+                    ){
+                        Text(
+                            text = "${hour?.split(":")?.get(0)?: "Bilinmeyen Saat"}:00",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(8.dp),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        items(itemsInHour) { item ->
+                            OutlinedCard(
+                                colors = CardDefaults.cardColors(containerColor =  MaterialTheme.colorScheme.surface),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                            ) {
+                                Text(
+                                    text = item.DT?.split(":")?.get(1) ?: "Boş",
+                                    modifier = Modifier.padding(8.dp),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBar()
@@ -258,11 +224,11 @@ fun AppBar()
                 title = {
                     Column {
                         Text("Sefer Saatleri", maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        Text("Hat İsmi", maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = MaterialTheme.typography.labelSmall.fontSize)
+                        Text(hatkodu, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = MaterialTheme.typography.labelSmall.fontSize)
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /* doSomething() */ }) {
+                    IconButton(onClick = {  onBackPressedDispatcher.onBackPressed()   }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Localized description"
@@ -270,59 +236,7 @@ fun AppBar()
                     }
                 },
                 actions = {
-                    AppBarRow(
-                        maxItemCount = maxItemCount,
-                        overflowIndicator = {
-                            IconButton(onClick = { it.show() }) {
-                                Icon(
-                                    imageVector = Icons.Filled.MoreVert,
-                                    contentDescription = "Localized description"
-                                )
-                            }
-                        }
-                    ) {
-                        clickableItem(
-                            onClick = {},
-                            icon = {
-                                Icon(
-                                    imageVector = Icons.Filled.Attachment,
-                                    contentDescription = null
-                                )
-                            },
-                            label = "Attachment"
-                        )
-                        clickableItem(
-                            onClick = {},
-                            icon = {
-                                Icon(imageVector = Icons.Filled.Edit, contentDescription = null)
-                            },
-                            label = "Edit"
-                        )
-                        clickableItem(
-                            onClick = {},
-                            icon = {
-                                Icon(imageVector = Icons.Outlined.Star, contentDescription = null)
-                            },
-                            label = "Favorite"
-                        )
-                        clickableItem(
-                            onClick = {},
-                            icon = {
-                                Icon(imageVector = Icons.Filled.Snooze, contentDescription = null)
-                            },
-                            label = "Alarm"
-                        )
-                        clickableItem(
-                            onClick = {},
-                            icon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.MarkEmailUnread,
-                                    contentDescription = "Localized description"
-                                )
-                            },
-                            label = "Email"
-                        )
-                    }
+
                 }
             )
 }
@@ -342,10 +256,8 @@ fun YonBUttons(yon1: String, yon2: String, onCheckedChange: (Int) -> Unit)
         options.forEachIndexed { index, label ->
             ToggleButton(
                 checked = selectedIndex == index,
-                onCheckedChange = {
-                            onCheckedChange(index)
-                            selectedIndex = index
-                      },
+                onCheckedChange = { onCheckedChange(index)
+                    selectedIndex = index },
                 modifier = modifiers[index].semantics { role = Role.RadioButton },
                 shapes =
                     when (index) {
@@ -395,21 +307,5 @@ fun GunSecimiTab(modifier: Modifier, onSelectedChange: (Int) -> Unit, arrayList:
                 }
             }
         }
-}
-
-@Composable
-fun ScrollContent(
-    modifier: Modifier = Modifier,
-
-    ) {
-    val range = 0..1
-    LazyColumn(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(range.count()) { index ->
-
-        }
     }
-}
 }

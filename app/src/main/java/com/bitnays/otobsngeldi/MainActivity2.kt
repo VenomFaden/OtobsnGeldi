@@ -79,19 +79,22 @@ class MainActivity2 : AppCompatActivity() {
             swiperefreshlayout.setRefreshing(false);
         }
         var intent: Intent = getIntent()
-        intentString = intent.getStringExtra("intentString")
+        Log.d("za","sa")
+        if (intentString== null)
+        {
+            intentString = intent.getStringExtra("intentString")
+        }
+
         HatKodu = intent.getStringExtra("hatkodu").toString()
 
         binding.GidisDonusSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked)
             {
-                println("sa")
                 durakList(durakInfoListD)
                 binding.GidisDonusSwitch.thumbTintList = ColorStateList.valueOf("#F44336".toColorInt())
 
             }
             else {
-                println("sa")
                 durakList(durakInfoListG)
                 binding.GidisDonusSwitch.thumbTintList = ColorStateList.valueOf("#4CAF50".toColorInt())
             }
@@ -116,15 +119,20 @@ class MainActivity2 : AppCompatActivity() {
 
             }
         }
-    }
-    override fun onStart() {
-        super.onStart()
+        binding.seferSaatleri.setOnClickListener{
+            var intent = Intent(this, MainActivity3::class.java)
+            intent.putExtra("intentString", intentString)
+            intent.putExtra("hatkodu",HatKodu)
+            intent.putExtra("gidis", durakInfoListD.firstOrNull()?.DURAKADI)
+            intent.putExtra("donus", durakInfoListG.firstOrNull()?.DURAKADI)
+            startActivity(intent)
+        }
     }
     override fun onPause() {
         super.onPause()
-        durakInfoList.clear()
-        durakInfoListD.clear()
-        durakInfoListG.clear()
+        //durakInfoList.clear()
+        //durakInfoListD.clear()
+        //durakInfoListG.clear()
     }
     fun getXML()
     {
@@ -140,7 +148,7 @@ class MainActivity2 : AppCompatActivity() {
                     </soap:Envelope>
                 """.trimIndent()
             val request = Request.Builder()
-                .url("https://api.ibb.gov.tr/iett/ibb/ibb.asmx?wsdl")
+                .url(Constants.ibb.toString())
                 .post(postBody.toRequestBody(MEDIA_TYPE_XML))
                 .build()
             try {
@@ -254,6 +262,7 @@ class MainActivity2 : AppCompatActivity() {
     }
     fun createList()
     {
+
         OtoHatKonumList = jsonDecode(intentString.toString())
         OtoHatKonumList.forEachIndexed {i, hat ->
             val durakName = durakInfoList.find { it.DURAKKODU ==  hat.yakinDurakKodu }
@@ -261,8 +270,6 @@ class MainActivity2 : AppCompatActivity() {
             println(OtoHatKonumList[i])
         }
         val adapter =  OtobusAdapter(OtoHatKonumList)
-        //binding.recylervi.layoutManager = LinearLayoutManager(this)
-        //binding.recylervi.adapter = adapter
     }
     fun durakList(arrayList: ArrayList<Durak>)
     {

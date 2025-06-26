@@ -15,16 +15,12 @@ class RequestCallback(private val onResponse: (String) -> Unit,
         request: UrlRequest?,
         info: UrlResponseInfo?,
         newLocationUrl: String?
-    ) {
-        Log.d("saaa","1"+info.toString())
-
-    }
+    ) {}
 
     override fun onResponseStarted(
         request: UrlRequest?,
         info: UrlResponseInfo?
     ) {
-        Log.d("saaa","2"+info.toString())
         if (info?.httpStatusCode== 200)
         {
             request?.read(ByteBuffer.allocateDirect(1024))
@@ -34,17 +30,12 @@ class RequestCallback(private val onResponse: (String) -> Unit,
     override fun onReadCompleted(
         request: UrlRequest?,
         info: UrlResponseInfo?,
-        byteBuffer: ByteBuffer?
-    ) {
+        byteBuffer: ByteBuffer?) {
         byteBuffer?.flip()
-
         val byteData = ByteArray(byteBuffer?.remaining() ?: 0 )
         byteBuffer?.get(byteData)
-
         val chunk = byteData.toString(Charset.defaultCharset())
         requestBody.append(chunk)
-        Log.d("saaa","3.3.3.3"+chunk)
-
         byteBuffer?.clear()
         request?.read(ByteBuffer.allocateDirect(1024))
       }
@@ -53,9 +44,7 @@ class RequestCallback(private val onResponse: (String) -> Unit,
         request: UrlRequest?,
         info: UrlResponseInfo?
     ) {
-
-        Log.d("saaa","4"+requestBody)
-        onResponse(requestBody.toString()) // Tam yanıtı MainActivity3'e aktar
+        onResponse(requestBody.toString())
     }
 
     override fun onFailed(
@@ -63,7 +52,6 @@ class RequestCallback(private val onResponse: (String) -> Unit,
         info: UrlResponseInfo?,
         error: CronetException?
     ) {
-        Log.d("saaa","5"+info.toString()+error.toString())
-        onError(error) // Hata durumunda MainActivity3'e bildir
+        onError(error)
     }
 }

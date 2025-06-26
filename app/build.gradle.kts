@@ -13,12 +13,13 @@ android {
 
     defaultConfig {
         applicationId = "com.bitnays.otobsngeldi"
+        buildConfigField("String", "SeferGerceklesme", "\"https://api.ibb.gov.tr/iett/FiloDurum/SeferGerceklesme.asmx?wsdl\"")
         minSdk = 28
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
     }
 
     buildTypes {

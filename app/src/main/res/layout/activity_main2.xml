@@ -68,6 +68,13 @@
         app:layout_constraintVertical_bias="0.905"
         tools:layout_editor_absoluteX="-28dp">
 
+        <Button
+            android:id="@+id/seferSaatleri"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="Saatler" />
+
         <TextView
             android:id="@+id/gidisTextView"
             android:layout_width="wrap_content"

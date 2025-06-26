@@ -23,16 +23,15 @@ import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.StringReader
 import androidx.compose.runtime.Composable
+import androidx.core.content.FileProvider
 
 class MainActivity : AppCompatActivity() {
     private val client = OkHttpClient()
     private lateinit var HatKodu: String
     private lateinit var binding: ActivityMainBinding
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         var intent = Intent(this, MainActivity3::class.java)
-        startActivity(intent)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
@@ -57,7 +56,7 @@ class MainActivity : AppCompatActivity() {
                     </soap:Envelope>
                 """.trimIndent()
                 val request = Request.Builder()
-                    .url("https://api.ibb.gov.tr/iett/FiloDurum/SeferGerceklesme.asmx?wsdl")
+                    .url(Constants.seferGerceklesme.toString())
                     .post(postBody.toRequestBody(MEDIA_TYPE_XML))
                     .build()
                 try {
