@@ -79,7 +79,6 @@ class MainActivity2 : AppCompatActivity() {
             swiperefreshlayout.setRefreshing(false);
         }
         var intent: Intent = getIntent()
-        Log.d("za","sa")
         if (intentString== null)
         {
             intentString = intent.getStringExtra("intentString")
@@ -134,6 +133,7 @@ class MainActivity2 : AppCompatActivity() {
         //durakInfoListD.clear()
         //durakInfoListG.clear()
     }
+
     fun getXML()
     {
         CoroutineScope(Dispatchers.IO).launch {
@@ -148,7 +148,7 @@ class MainActivity2 : AppCompatActivity() {
                     </soap:Envelope>
                 """.trimIndent()
             val request = Request.Builder()
-                .url(Constants.ibb.toString())
+                .url(BuildConfig.ibb.toString())
                 .post(postBody.toRequestBody(MEDIA_TYPE_XML))
                 .build()
             try {

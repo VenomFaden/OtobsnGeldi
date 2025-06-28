@@ -12,14 +12,16 @@ android {
     compileSdk = 35
 
     defaultConfig {
+
         applicationId = "com.bitnays.otobsngeldi"
+        buildConfigField("String", "ibb", "\"https://api.ibb.gov.tr/iett/ibb/ibb.asmx?wsdl\"")
         buildConfigField("String", "SeferGerceklesme", "\"https://api.ibb.gov.tr/iett/FiloDurum/SeferGerceklesme.asmx?wsdl\"")
+        buildConfigField("String", "PlanlananSeferSaatleri","\"https://api.ibb.gov.tr/iett/UlasimAnaVeri/PlanlananSeferSaati.asmx?wsdl\"")
         minSdk = 28
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
     }
 
     buildTypes {
@@ -41,6 +43,7 @@ android {
     buildFeatures {
         viewBinding = true
         compose = true
+        buildConfig = true
     }
 }
 composeCompiler {

@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -54,6 +56,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
@@ -83,6 +86,7 @@ import java.util.concurrent.Executors
 class MainActivity3 : ComponentActivity() {
     private lateinit var hatkodu: String
     private var hatSeferSaatleriList: (MutableList<HatSeferSaatleri>) = mutableStateListOf<HatSeferSaatleri>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -99,9 +103,7 @@ class MainActivity3 : ComponentActivity() {
 
         setContent {
             OtobüsünGeldiTheme {
-
                 SeferSaatleriScreen()
-
             }
         }
     }
@@ -121,8 +123,9 @@ fun getSeferSaatleri(context: Context, hatkodu: String ,
     val myBuilder = CronetEngine.Builder(context)
     val cronetEngine: CronetEngine = myBuilder.build()
     val executor: Executor = Executors.newSingleThreadExecutor()
+    val url = BuildConfig.PlanlananSeferSaatleri
     val requestBuilder = cronetEngine.newUrlRequestBuilder(
-        "https://api.ibb.gov.tr/iett/UlasimAnaVeri/PlanlananSeferSaati.asmx?wsdl",
+        url,
         RequestCallback(onResponse,onError), executor)
     val uploadDataProvider : UploadDataProvider = UploadDataProviders.create(postBody.toByteArray())
     requestBuilder
@@ -173,7 +176,7 @@ fun SeferSaatleriScreen() {
 @Composable
 fun SeferSaatleriList(list: ArrayList<HatSeferSaatleri>) {
     val groupedList = list.groupBy { it.DT?.split(":")?.get(0) }
-    LazyColumn {
+    LazyColumn(modifier = Modifier.navigationBarsPadding()){
         groupedList.forEach { (hour, itemsInHour) ->
             item {
                 Column(modifier = Modifier.padding(5.dp)) {

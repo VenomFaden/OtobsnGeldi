@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
                     </soap:Envelope>
                 """.trimIndent()
                 val request = Request.Builder()
-                    .url(Constants.seferGerceklesme.toString())
+                    .url(BuildConfig.SeferGerceklesme)
                     .post(postBody.toRequestBody(MEDIA_TYPE_XML))
                     .build()
                 try {
