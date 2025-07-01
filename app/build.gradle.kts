@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.coordinatorlayout)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview.android)
     val nav_version = "2.8.9"
     // Jetpack Compose integration
     implementation("androidx.navigation:navigation-compose:$nav_version")

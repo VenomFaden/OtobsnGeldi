@@ -5,9 +5,26 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.annotation.RequiresPermission
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bitnays.otobsngeldi.databinding.ActivityMainBinding
@@ -23,7 +40,14 @@ import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.StringReader
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
+import androidx.window.core.layout.WindowSizeClass
+import com.bitnays.otobsngeldi.screens.MainSearch
+import com.bitnays.otobsngeldi.ui.theme.OtobüsünGeldiTheme
 
 class MainActivity : AppCompatActivity() {
     private val client = OkHttpClient()
@@ -41,9 +65,13 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        setContent {
+            OtobüsünGeldiTheme{
+               MainSearch()
+            }
+        }
         binding.button.setOnClickListener {
             HatKodu = binding.editTextText.text.toString()
-            
             CoroutineScope(Dispatchers.IO).launch {
                 val postBody = """
                     <?xml version='1.0' encoding='utf-8'?> 
@@ -85,15 +113,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-    @Composable
-    fun MessageCard(name: String) {
-        Text(text = "Hello $name!")
-    }
-
     @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-    override fun onStart() {
-        super.onStart()
-    }
     fun xmlParser(xmlString: String)
     {
         var xmldata = xmlString
@@ -124,5 +144,4 @@ class MainActivity : AppCompatActivity() {
     companion object {
         val MEDIA_TYPE_XML = "text/xml; charset=utf-8".toMediaType()
     }
-
 }
