@@ -31,14 +31,25 @@ import android.Manifest
 import android.location.Location
 import android.util.Log
 import android.view.View
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.annotation.RequiresPermission
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.bitnays.otobsngeldi.screens.DurakListScreen
+import com.bitnays.otobsngeldi.screens.MainSearch
+import com.bitnays.otobsngeldi.ui.theme.OtobüsünGeldiTheme
+import com.bitnays.otobsngeldi.viewmodel.DurakListViewModel
+import com.bitnays.otobsngeldi.viewmodel.MainSearchViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
+import kotlin.getValue
 import kotlin.math.sqrt
 
 class MainActivity2 : AppCompatActivity() {
+    private val durakListViewModel : DurakListViewModel by viewModels<DurakListViewModel>()
+
+
     private lateinit var filterArrayList: ArrayList<Durak>
     private lateinit var binding: ActivityMain2Binding
     private var OtoHatKonumList = ArrayList<OtoHatKonum>()
@@ -82,9 +93,12 @@ class MainActivity2 : AppCompatActivity() {
         if (intentString== null)
         {
             intentString = intent.getStringExtra("intentString")
+            durakListViewModel.setOtoHatKonumList(jsonDecode(intentString.toString()))
         }
 
         HatKodu = intent.getStringExtra("hatkodu").toString()
+        durakListViewModel.setHatKodu(HatKodu)
+        Log.d("test123","a"+durakListViewModel.hatKodu.value)
 
         binding.GidisDonusSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked)
@@ -126,14 +140,16 @@ class MainActivity2 : AppCompatActivity() {
             intent.putExtra("donus", durakInfoListG.firstOrNull()?.DURAKADI)
             startActivity(intent)
         }
+        setContent {
+            OtobüsünGeldiTheme{
+                DurakListScreen()
+            }
+        }
     }
     override fun onPause() {
         super.onPause()
-        //durakInfoList.clear()
-        //durakInfoListD.clear()
-        //durakInfoListG.clear()
-    }
 
+    }
     fun getXML()
     {
         CoroutineScope(Dispatchers.IO).launch {
@@ -267,7 +283,7 @@ class MainActivity2 : AppCompatActivity() {
         OtoHatKonumList.forEachIndexed {i, hat ->
             val durakName = durakInfoList.find { it.DURAKKODU ==  hat.yakinDurakKodu }
             hat.yakinDurakKodu = durakName?.DURAKADI.toString()
-            println(OtoHatKonumList[i])
+            //println(OtoHatKonumList[i])
         }
         val adapter =  OtobusAdapter(OtoHatKonumList)
     }

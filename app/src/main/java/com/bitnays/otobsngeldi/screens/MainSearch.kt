@@ -1,9 +1,7 @@
 package com.bitnays.otobsngeldi.screens
 
-import android.graphics.drawable.Icon
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,42 +31,37 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bitnays.otobsngeldi.ui.theme.OtobüsünGeldiTheme
+import com.bitnays.otobsngeldi.viewmodel.MainSearchViewModel
+import com.bitnays.otobsngeldi.viewmodel.SharedViewModel
+
 
 @Composable
 @Preview(showBackground = true)
 fun MainSearch() {
+    val viewModel: MainSearchViewModel = viewModel()
+    val sharedViewModel : SharedViewModel = viewModel()
     OtobüsünGeldiTheme {
         var favCardExpanded by remember { mutableStateOf(false) }
         var searchText = remember { mutableStateOf("") }
         var active: Boolean by remember { mutableStateOf(false) }
-        Scaffold(topBar = { AppBar() }) { innerPadding ->
+        Scaffold(topBar = { AppBar("Otobüsün Geldi","Merhaba") }) { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding).fillMaxWidth().fillMaxHeight(), contentAlignment = Alignment.Center)
             {
                 Column() {
-                    Search(searchText.value, onQueryChange = {searchText.value = it},active =active,  onSearch = {active = it}, onActiveChange = {active = it})
+                    Search(searchText.value, onQueryChange = {searchText.value = it},active =active,  onSearch = {active = it}, onActiveChange = {active = it},viewModel,sharedViewModel)
                     FavCard(onExpandedChange = {favCardExpanded = it}, expanded = favCardExpanded)
                 }
             }
         }
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AppBar()
-{
-    TopAppBar(
-        title = {
-            Column {
-                Text("Otobüsün Geldi", maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(10.dp))
-                Text("Merhaba", maxLines = 1, overflow = TextOverflow.Ellipsis,modifier = Modifier.padding(10.dp), fontSize = MaterialTheme.typography.labelSmall.fontSize)
-            }
-        }, actions = {IconButton(onClick = {}) { Icon(imageVector = Icons.Outlined.Menu, contentDescription = "Localized description") }}
-    )
-}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Search(
@@ -76,22 +69,32 @@ fun Search(
     onQueryChange: (String) -> Unit,
     active: Boolean,
     onSearch: (Boolean) -> Unit,
-    onActiveChange: (Boolean) -> Unit
+    onActiveChange: (Boolean) -> Unit,
+    viewModel: MainSearchViewModel,
+    sharedViewModel: SharedViewModel
 ) {
+    val context = LocalContext.current
     SearchBar(
         trailingIcon ={ if (active) Icon(modifier = Modifier.clickable{ onQueryChange("") }, imageVector = Icons.Filled.Close, contentDescription = "Localized description")},
         leadingIcon = { Icon(imageVector = Icons.Filled.Search, contentDescription = "Localized description")},
         placeholder = { Text(text = "Otobüs Hattı Ara") },
         query = query,
-
         onQueryChange = { onQueryChange(it) },
-        onSearch = { onSearch(it.toBoolean())
-                    println(it.toBoolean())
+        onSearch = {
+            onSearch(it.toBoolean())
+            viewModel.getHatOtoKonumJSON(it)
+
+            viewModel.liveHatOtoKonumString.observeForever { it
+                if (it=="404"){
+                    Toast.makeText(context, "Böyle bir otobüs yok", Toast.LENGTH_LONG).show()
+                }
+            }
+            sharedViewModel.setHatOtoKonumString(viewModel.liveHatOtoKonumString.value)
+            sharedViewModel.setHatKodu(it)
                    },
         active = active,
         onActiveChange = { onActiveChange(it) }
     ) {
-
     }
 }
 @Composable

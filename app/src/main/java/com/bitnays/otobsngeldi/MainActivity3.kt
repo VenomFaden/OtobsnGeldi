@@ -259,8 +259,10 @@ fun YonBUttons(yon1: String, yon2: String, onCheckedChange: (Int) -> Unit)
         options.forEachIndexed { index, label ->
             ToggleButton(
                 checked = selectedIndex == index,
-                onCheckedChange = { onCheckedChange(index)
-                    selectedIndex = index },
+                onCheckedChange = {
+                    onCheckedChange(index)
+                    selectedIndex = index
+                                  },
                 modifier = modifiers[index].semantics { role = Role.RadioButton },
                 shapes =
                     when (index) {
