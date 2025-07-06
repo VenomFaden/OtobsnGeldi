@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -36,6 +37,9 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.bitnays.otobsngeldi.Durak
 import com.bitnays.otobsngeldi.OtoHatKonum
 import com.bitnays.otobsngeldi.R
@@ -45,10 +49,11 @@ enum class Direction(val short: String, val stringDirection: String){
     Gidis("G","Gidiş"),
     Donus("D","Dönüş")
 }
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun DurakListScreen()
 {
-
+    val navController = rememberNavController()
     val backButton = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     val viewModel: DurakListViewModel = viewModel()
     val durakKodu by viewModel.hatKodu
@@ -63,19 +68,33 @@ fun DurakListScreen()
         viewModel.getDurakDetay(durakKodu)
     }
     OtobüsünGeldiTheme {
-        OtobüsünGeldiTheme {
-            Scaffold(topBar = { AppBarWithBack("Hat Durak Bilgisi",durakKodu,backButton) },) { innerPadding ->
-                Box(modifier = Modifier.padding(innerPadding).fillMaxWidth()){
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        OtobusCard(viewModel.otoHatkonumList.toCollection(mutableListOf()))
-                        SelectDirection(yon1.toString(),yon2.toString(), oncheckedChange = {selecttedDirectremember = it})
-                        DurakList(durakList.filter { it.YON == Direction.entries[selecttedDirectremember].short}, returnFirstDurak = {directionWay = it},null)
+                NavHost(navController = navController, startDestination = "0"){
+                    composable("0") {
+                        Scaffold(topBar = { AppBarWithBack("Hat Durak Bilgisi",durakKodu,backButton) },) { innerPadding ->
+                            Box(modifier = Modifier.padding(innerPadding).fillMaxWidth()) {
+                                Button(onClick = { navController.navigate("1") }) { Text("sa") }
+                                Column(modifier = Modifier.fillMaxWidth()) {
+                                    OtobusCard(viewModel.otoHatkonumList.toCollection(mutableListOf()))
+                                    SelectDirection(
+                                        yon1.toString(),
+                                        yon2.toString(),
+                                        oncheckedChange = { selecttedDirectremember = it })
+                                    DurakList(
+                                        durakList.filter { it.YON == Direction.entries[selecttedDirectremember].short },
+                                        returnFirstDurak = { directionWay = it },
+                                        null
+                                    )
+                                    Button(onClick = { navController.navigate("1") }) { Text("sa") }
+                                }
+                            }
+                        }
+                    }
+                    composable(route = "1") {
+                        Button(onClick = { navController.navigate("0")}) {Text("as") }
                     }
                 }
             }
         }
-    }
-}
 
 @Composable
 fun OtobusCard(otobusSeferList: MutableList<OtoHatKonum>) {
