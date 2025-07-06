@@ -12,6 +12,8 @@ import com.bitnays.otobsngeldi.repo.repo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.internal.filterList
 
 class DurakListViewModel: ViewModel() {
     private val getRepo = repo()
@@ -30,11 +32,21 @@ class DurakListViewModel: ViewModel() {
     fun getDurakDetay(value: String){
         CoroutineScope(Dispatchers.IO).launch {
             val list = getRepo.DurakDetayJSON(value)
-            Log.d("test123",list.toString())
+
+            _durakDetayList.clear()
             _durakDetayList.addAll(list as Collection<Durak>)
-            println(durakDetayList)
+
+            withContext(Dispatchers.Main) {
+                        val durakGyon = _durakDetayList.lastOrNull { it.YON == "G" }?.DURAKADI //
+                        val durakDyon = _durakDetayList.lastOrNull { it.YON == "D" }?.DURAKADI //
+                        Log.d("123",durakGyon.toString())
+                        Log.d("123",durakDyon.toString())
+                        otoHatkonumList.forEachIndexed { index,oto ->
+                       _durakDetayList.firstOrNull {it.DURAKKODU == oto.yakinDurakKodu && oto.yon == durakGyon }?.otobusVar = true
+                       _durakDetayList.firstOrNull {it.DURAKKODU == oto.yakinDurakKodu && oto.yon == durakDyon }?.otobusVar = true
+                   }
+                }
+            }
+
         }
     }
-
-
-}

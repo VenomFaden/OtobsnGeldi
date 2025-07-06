@@ -90,11 +90,11 @@ class MainActivity2 : AppCompatActivity() {
             swiperefreshlayout.setRefreshing(false);
         }
         var intent: Intent = getIntent()
-        if (intentString== null)
-        {
+
             intentString = intent.getStringExtra("intentString")
+            Log.d("test123","m2 buras"+intentString.toString())
             durakListViewModel.setOtoHatKonumList(jsonDecode(intentString.toString()))
-        }
+
 
         HatKodu = intent.getStringExtra("hatkodu").toString()
         durakListViewModel.setHatKodu(HatKodu)

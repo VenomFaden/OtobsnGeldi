@@ -3,14 +3,18 @@ package com.bitnays.otobsngeldi.screens
 import android.util.Log
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -26,10 +30,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bitnays.otobsngeldi.Durak
+import com.bitnays.otobsngeldi.OtoHatKonum
+import com.bitnays.otobsngeldi.R
 import com.bitnays.otobsngeldi.ui.theme.OtobüsünGeldiTheme
 import com.bitnays.otobsngeldi.viewmodel.DurakListViewModel
 enum class Direction(val short: String, val stringDirection: String){
@@ -58,6 +67,7 @@ fun DurakListScreen()
             Scaffold(topBar = { AppBarWithBack("Hat Durak Bilgisi",durakKodu,backButton) },) { innerPadding ->
                 Box(modifier = Modifier.padding(innerPadding).fillMaxWidth()){
                     Column(modifier = Modifier.fillMaxWidth()) {
+                        OtobusCard(viewModel.otoHatkonumList.toCollection(mutableListOf()))
                         SelectDirection(yon1.toString(),yon2.toString(), oncheckedChange = {selecttedDirectremember = it})
                         DurakList(durakList.filter { it.YON == Direction.entries[selecttedDirectremember].short}, returnFirstDurak = {directionWay = it},null)
                     }
@@ -66,6 +76,13 @@ fun DurakListScreen()
         }
     }
 }
+
+@Composable
+fun OtobusCard(otobusSeferList: MutableList<OtoHatKonum>) {
+
+
+}
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SelectDirection(yon1: String,yon2: String, oncheckedChange: (Int) -> Unit)
@@ -93,8 +110,8 @@ private fun DurakList(list: List<Durak>, returnFirstDurak: (ArrayList<String>)->
 {
     val nearDurak: Durak
     LazyColumn {
-        list.forEach { (YON, SIRANO, DURAKKODU, DURAKADI, XKOORDINATI,YKOORDINATI,otobusVar) ->
-            item {
+        items(items = list, key = { it.DURAKKODU }) { durak ->
+            val (YON, SIRANO, DURAKKODU, DURAKADI, XKOORDINATI, YKOORDINATI, otobusVar) = durak
                Column {
                    Row {
                        Card(colors = CardDefaults.cardColors(
@@ -111,9 +128,22 @@ private fun DurakList(list: List<Durak>, returnFirstDurak: (ArrayList<String>)->
                            containerColor = MaterialTheme.colorScheme.surface,),
                            modifier = Modifier.fillMaxWidth().padding(3.dp),
                            border = BorderStroke(0.5.dp, Color.Gray)){
-
                            Column(modifier = Modifier.padding(10.dp)) {
                                Row {
+                                   if (otobusVar==true){
+                                       Image(painter = painterResource(id = R.drawable.gidis), contentDescription = "gidis",
+                                           modifier = Modifier
+                                               .width(25.dp)
+                                               .height(25.dp)
+                                               .clip(CircleShape))
+                                   }
+                                   else{
+                                       Image(colorFilter = ColorFilter.tint(Color.Black),painter = painterResource(id = R.drawable.gidis), contentDescription = "gidis",
+                                           modifier = Modifier
+                                               .width(25.dp)
+                                               .height(25.dp)
+                                               .clip(CircleShape))
+                                   }
 
                                    Text(text = DURAKADI,maxLines = 1,)
                                    if (DURAKADI == null) // yakın durak
@@ -132,4 +162,3 @@ private fun DurakList(list: List<Durak>, returnFirstDurak: (ArrayList<String>)->
 
         }
     }
-}

@@ -58,6 +58,7 @@ class MainActivity : AppCompatActivity() {
             sharedViewModel.setHatOtoKonumString(it)
             if(it != "404" && it != "")
             {
+                Log.d("test123","burasi m1"+it.toString())
                 val hatkodu = sharedViewModel.hatKodu.value
                 Log.d("test123","m"+hatkodu)
                 var intent = Intent(this, MainActivity2::class.java)
