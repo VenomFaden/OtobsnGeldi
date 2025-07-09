@@ -1,7 +1,6 @@
 package com.bitnays.otobsngeldi.repo
 
-import android.R
-import android.util.Log
+
 import com.bitnays.otobsngeldi.BuildConfig
 import com.bitnays.otobsngeldi.Durak
 import com.bitnays.otobsngeldi.MainActivity.Companion.MEDIA_TYPE_XML
@@ -9,7 +8,6 @@ import com.bitnays.otobsngeldi.MainActivity2
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.ResponseBody
 import okio.IOException
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
@@ -80,7 +78,6 @@ class repo (){
             return "404"
         }
     }
-
     private fun xmlParser(responseString: String): String? {
         var xmldata = responseString
         var factory = XmlPullParserFactory.newInstance()
@@ -148,5 +145,9 @@ class repo (){
             eventType = parser.next()
         }
         return returnList
+    }
+    fun getLocation()
+    {
+
     }
 }

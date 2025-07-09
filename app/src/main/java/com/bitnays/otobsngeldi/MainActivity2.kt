@@ -34,12 +34,12 @@ import android.view.View
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresPermission
+import androidx.constraintlayout.motion.widget.Debug.getLocation
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bitnays.otobsngeldi.screens.DurakListScreen
-import com.bitnays.otobsngeldi.screens.MainSearch
+import com.bitnays.otobsngeldi.screens.GetLocationPermission
 import com.bitnays.otobsngeldi.ui.theme.OtobüsünGeldiTheme
 import com.bitnays.otobsngeldi.viewmodel.DurakListViewModel
-import com.bitnays.otobsngeldi.viewmodel.MainSearchViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
@@ -62,7 +62,9 @@ class MainActivity2 : AppCompatActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var locationFine: Location? = null
     private var enYakinDurak: Durak? = null
+    @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onCreate(savedInstanceState: Bundle?) {
+
         val requestPermissionLauncher = registerForActivityResult(RequestPermission())
         { isGranted: Boolean ->
                 if (isGranted){
@@ -75,6 +77,8 @@ class MainActivity2 : AppCompatActivity() {
                     Log.d("test","11")
                 }
         }
+
+        //durakListViewModel.getLocation(this)
         binding = ActivityMain2Binding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -113,25 +117,26 @@ class MainActivity2 : AppCompatActivity() {
             }
         }
         getXML()
-        when {
-            ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
-                if (locationFine == null)
-                {
-                    getLocation()
-                }
-                Log.d("test","3")
-            }
-            ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                setInvisible()
-                Snackbar.make(binding.main, "Konum izni gerekli", Snackbar.LENGTH_INDEFINITE).setAction("İzin ver"){
-                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                }.show()
-            }
-            else -> {
-                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+       //when {
+       //    ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
+       //        if (locationFine == null)
+       //        {
+       //            //getLocation()
+       //            Log.d("test","5")
+       //        }
 
-            }
-        }
+       //    }
+       //    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION) -> {
+       //        setInvisible()
+       //        Snackbar.make(binding.main, "Konum izni gerekli", Snackbar.LENGTH_INDEFINITE).setAction("İzin ver"){
+       //            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+       //        }.show()
+       //    }
+       //    else -> {
+       //        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+
+       //    }
+       //}
         binding.seferSaatleri.setOnClickListener{
             var intent = Intent(this, MainActivity3::class.java)
             intent.putExtra("intentString", intentString)
@@ -142,13 +147,13 @@ class MainActivity2 : AppCompatActivity() {
         }
         setContent {
             OtobüsünGeldiTheme{
+                //GetLocationPermission(durakListViewModel)
                 DurakListScreen()
             }
         }
     }
     override fun onPause() {
         super.onPause()
-
     }
     fun getXML()
     {
@@ -195,6 +200,7 @@ class MainActivity2 : AppCompatActivity() {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location : Location? ->
                 locationFine = location
+                //Log.d("123",locationFine.toString())
             }
     }
     fun jsonDecode(text: String): ArrayList<OtoHatKonum>
