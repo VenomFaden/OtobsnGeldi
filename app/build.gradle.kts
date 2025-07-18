@@ -4,7 +4,7 @@ plugins {
     kotlin("plugin.serialization") version "1.9.23"
     id("kotlin-parcelize")
     alias(libs.plugins.compose.compiler)
-
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -121,4 +121,12 @@ dependencies {
     implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.4.0-alpha15")
     debugImplementation("androidx.compose.ui:ui-tooling:1.8.3")
 
+
+    implementation(platform("com.google.firebase:firebase-bom:33.16.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 }

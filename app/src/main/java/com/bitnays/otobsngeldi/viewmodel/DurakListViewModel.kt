@@ -5,27 +5,25 @@ import android.content.Context
 import android.location.Location
 import android.util.Log
 import androidx.annotation.RequiresPermission
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.bitnays.otobsngeldi.Durak
-import com.bitnays.otobsngeldi.MainActivity2
-import com.bitnays.otobsngeldi.OtoHatKonum
+import com.bitnays.otobsngeldi.model.Durak
+import com.bitnays.otobsngeldi.model.OtoHatKonum
 import com.bitnays.otobsngeldi.repo.repo
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.abs
-import kotlin.math.absoluteValue
 import kotlin.math.sqrt
 
 class DurakListViewModel: ViewModel() {
+    private lateinit var auth: FirebaseAuth
     private var _nearDurak = mutableStateOf("")
     val nearDurak : State<String> =  _nearDurak
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -38,7 +36,12 @@ class DurakListViewModel: ViewModel() {
     val hatKodu: State<String> = _hatKodu
     private val _location = mutableStateOf(Location(""))
     val location: State<Location> = _location
-
+    fun getAuth()
+    {
+        auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser
+        Log.d("current", currentUser?.photoUrl.toString())
+    }
     fun setLocation(value: Location?) {
         if (value != null) {
             _location.value = value
@@ -51,7 +54,7 @@ class DurakListViewModel: ViewModel() {
     fun setHatKodu(value: String) {
         _hatKodu.value = value
     }
-    fun getDurakDetay(value: String) {
+    fun getDurakDetay2(value: String) {
         CoroutineScope(Dispatchers.IO).launch {
             val list = getRepo.DurakDetayJSON(value)
             _durakDetayList.clear()
@@ -67,6 +70,19 @@ class DurakListViewModel: ViewModel() {
                 }
                 NearestDurak()
             }
+        }
+    }
+    fun getDurakDetay(value: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val list = getRepo.DurakDetayJSON(value)
+            _durakDetayList.clear()
+            _durakDetayList.addAll(list as Collection<Durak>)
+            withContext(Dispatchers.Main) {
+                otoHatkonumList.forEachIndexed {index, oto ->
+                    _durakDetayList.firstOrNull { it.DURAKKODU == oto.yakinDurakKodu && it.YON == oto.guzergahkodu.split("_").get(1)}?.otobusVar = true
+                }
+            }
+            NearestDurak()
         }
     }
     @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -90,14 +106,21 @@ class DurakListViewModel: ViewModel() {
         Log.d("test",_nearDurak.value)
     }
     fun KalanDurakSayisi(list: List<Durak>): Int?{
-        //val direction = list.lastOrNull()
-        val nearestDurakIndex =  list.indexOfFirst { it.DURAKADI == nearDurak.value }
+        val nearestDurakSiraNo =  list.firstOrNull{ it.DURAKADI == nearDurak.value }?.SIRANO?.toInt() ?: null
         val kalanDurak: Int?
 
-        kalanDurak = list.filter { it.otobusVar == true }.minByOrNull { it.SIRANO.toInt() - nearestDurakIndex }?.let {
-            it.SIRANO.toInt() - nearestDurakIndex
+        //kalanDurak = list.filter { it.otobusVar == true }.minByOrNull { it.SIRANO.toInt() - nearestDurakIndex }?.let {
+        //    it.SIRANO.toInt() - nearestDurakIndex
+        //}
+        if (nearestDurakSiraNo != null){
+            kalanDurak = list.filter {
+                it.otobusVar == true && it.SIRANO.toInt() < nearestDurakSiraNo
+            }.minByOrNull { abs(it.SIRANO.toInt() - nearestDurakSiraNo) }?.let {
+                return  abs(it.SIRANO.toInt() - nearestDurakSiraNo)
+            }
         }
-        return abs(kalanDurak?.toInt() ?: 0)
+        return -1
     }
+
 }
 

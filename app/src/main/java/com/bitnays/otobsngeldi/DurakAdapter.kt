@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bitnays.otobsngeldi.databinding.RecylerRow2Binding
 import androidx.core.graphics.toColorInt
+import com.bitnays.otobsngeldi.model.Durak
 
 class DurakAdapter(val durakListesi: ArrayList<Durak>, val enYakinDUrak: Durak?) : RecyclerView.Adapter<DurakAdapter.ViewHolder>() {
     var rowColor = 0

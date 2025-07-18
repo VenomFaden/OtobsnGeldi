@@ -33,7 +33,8 @@ fun AppBar(headerText: String, subHeaderText: String)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBarWithBack(
-    headerText: String, subHeaderText: String, onBackPressedDispatcher: OnBackPressedDispatcher?
+    headerText: String, subHeaderText: String, onBackPressedDispatcher: OnBackPressedDispatcher?,
+    onClick : () -> Unit = {}
 )
 {
     TopAppBar(
@@ -42,7 +43,7 @@ fun AppBarWithBack(
                 Text(text = headerText, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(10.dp))
                 Text(text = subHeaderText, maxLines = 1, overflow = TextOverflow.Ellipsis,modifier = Modifier.padding(10.dp), fontSize = MaterialTheme.typography.labelSmall.fontSize)
             }
-        }, actions = {IconButton(onClick = {}) { Icon(imageVector = Icons.Outlined.Menu, contentDescription = "Localized description") }},                navigationIcon = {
+        }, actions = {IconButton(onClick = {onClick()}) { Icon(imageVector = Icons.Outlined.Menu, contentDescription = "Localized description") }},                navigationIcon = {
             IconButton(onClick = { onBackPressedDispatcher?.onBackPressed() }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,

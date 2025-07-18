@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bitnays.otobsngeldi.databinding.RecylerRowBinding
+import com.bitnays.otobsngeldi.model.OtoHatKonum
 
 class OtobusAdapter(val otobusListesi: ArrayList<OtoHatKonum>) : RecyclerView.Adapter<OtobusAdapter.ViewHolder>() {
     class ViewHolder(val binding: RecylerRowBinding ) : RecyclerView.ViewHolder(binding.root) {
