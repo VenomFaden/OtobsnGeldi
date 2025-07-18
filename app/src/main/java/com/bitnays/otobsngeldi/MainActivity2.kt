@@ -1,15 +1,12 @@
 package com.bitnays.otobsngeldi
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,15 +31,14 @@ import android.view.View
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresPermission
-import androidx.constraintlayout.motion.widget.Debug.getLocation
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.bitnays.otobsngeldi.model.Durak
+import com.bitnays.otobsngeldi.model.OtoHatKonum
 import com.bitnays.otobsngeldi.screens.DurakListScreen
-import com.bitnays.otobsngeldi.screens.GetLocationPermission
 import com.bitnays.otobsngeldi.ui.theme.OtobüsünGeldiTheme
 import com.bitnays.otobsngeldi.viewmodel.DurakListViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.material.snackbar.Snackbar
 import kotlin.getValue
 import kotlin.math.sqrt
 
@@ -250,7 +246,16 @@ class MainActivity2 : AppCompatActivity() {
                         "YKOORDINATI"->{
                             parser.next()
                             YKOORDINATI = parser.text
-                            durakInfoList.add(Durak(yon,siraNo,durakIsım,durakKod,XKOORDINATI,YKOORDINATI))
+                            durakInfoList.add(
+                                Durak(
+                                    yon,
+                                    siraNo,
+                                    durakIsım,
+                                    durakKod,
+                                    XKOORDINATI,
+                                    YKOORDINATI
+                                )
+                            )
                         }
                     }
                 }

@@ -1,4 +1,4 @@
-package com.bitnays.otobsngeldi
+package com.bitnays.otobsngeldi.model
 
 import kotlinx.serialization.Serializable
 

@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -31,8 +30,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.DirectionsBus
 import androidx.compose.material.icons.filled.SatelliteAlt
-import androidx.compose.material.icons.filled.Subtitles
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -68,10 +67,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.bitnays.otobsngeldi.Durak
+import com.bitnays.otobsngeldi.model.Durak
 import com.bitnays.otobsngeldi.R
 import com.bitnays.otobsngeldi.ui.theme.OtobüsünGeldiTheme
 import com.bitnays.otobsngeldi.viewmodel.DurakListViewModel
+import com.bitnays.otobsngeldi.viewmodel.SharedViewModel
+
 enum class Direction(val short: String, val stringDirection: String){
     Gidis("G","Gidiş"),
     Donus("D","Dönüş")
@@ -80,6 +81,7 @@ enum class Direction(val short: String, val stringDirection: String){
 @Composable
 fun DurakListScreen()
 {   val viewModel: DurakListViewModel = viewModel()
+    val viewModelShared: SharedViewModel = viewModel()
     var permissionBoolean by remember { mutableStateOf(false) }
 
     GetLocationPermission(viewModel = viewModel, permissionBoolean = {permissionBoolean = it} )
@@ -107,7 +109,7 @@ fun DurakListScreen()
                             modifier = Modifier.navigationBarsPadding()) { innerPadding ->
                             Box(modifier = Modifier.padding(innerPadding).fillMaxWidth()) {
                                 Column(modifier = Modifier.fillMaxWidth()) {
-                                    Row(modifier = Modifier.fillMaxWidth().padding(15.dp).wrapContentHeight()) {
+                                    Column(modifier = Modifier.fillMaxWidth().padding(15.dp).wrapContentHeight()) {
                                         Box(contentAlignment = Alignment.TopStart){
                                             Column {
                                                 if (permissionBoolean){
@@ -118,13 +120,12 @@ fun DurakListScreen()
                                         }
                                         Box(contentAlignment = Alignment.TopEnd, modifier = Modifier.fillMaxWidth()){
                                             Column {
-
-                                                    Button(onClick = {}){
+                                                    Button(onClick = {navController.navigate("1")}){
                                                         Text("Sefer Saatleri",fontSize =MaterialTheme.typography.labelSmall.fontSize)
-                                                        Icon(Icons.Filled.SatelliteAlt, contentDescription = "Localized description",
+                                                        Icon(Icons.Filled.DirectionsBus, contentDescription = "Localized description",
                                                             modifier = Modifier.size(15.dp))
                                                     }
-                                                    Button(onClick = {}){
+                                                    Button(onClick = {navController.navigate("2")}){
                                                         Text("Duyurular",fontSize = MaterialTheme.typography.labelSmall.fontSize)
                                                         Icon(Icons.Filled.SatelliteAlt, contentDescription = "Localized description",
                                                             modifier = Modifier.size(15.dp))
@@ -145,8 +146,15 @@ fun DurakListScreen()
                             }
                         }
                     }
-                    composable(route = "1") {
-
+                    composable(route = "1"){
+                        viewModelShared.setHatKodu2(durakKodu)
+                        SeferSaatleriScreen(viewModelShared)
+                    }
+                    composable(route = "2"){
+                        DuyurularScreen(headerText = "Duyurular",
+                            durakKodu = durakKodu,
+                            onBackPressedDispatcher = backButton
+                        )
                     }
                 }
             }
@@ -304,7 +312,10 @@ fun EnYakinDurak(viewModel: DurakListViewModel)
 @Composable
 fun KalanDurakSayisi(int: Int?)
 {
-    Text("Kalan Durak Sayısı $int")
+    if (int != -1)
+    {
+        Text("Kalan Durak Sayısı $int")
+    }
 }
 
 @Preview(showBackground = true)

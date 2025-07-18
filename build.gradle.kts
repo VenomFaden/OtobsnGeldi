@@ -4,5 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     kotlin("plugin.serialization") version "1.9.23"
     alias(libs.plugins.compose.compiler) apply false
+    id("com.google.gms.google-services") version "4.4.3" apply false
+
 
 }

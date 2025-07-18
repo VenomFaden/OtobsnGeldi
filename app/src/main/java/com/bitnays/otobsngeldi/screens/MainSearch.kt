@@ -31,6 +31,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,6 +48,7 @@ import com.bitnays.otobsngeldi.viewmodel.SharedViewModel
 fun MainSearch() {
     val viewModel: MainSearchViewModel = viewModel()
     val sharedViewModel : SharedViewModel = viewModel()
+    val SearchBarBoxPadding = remember { mutableStateOf(25.dp) }
     OtobüsünGeldiTheme {
         var favCardExpanded by remember { mutableStateOf(false) }
         var searchText = remember { mutableStateOf("") }
@@ -53,15 +56,25 @@ fun MainSearch() {
         Scaffold(topBar = { AppBar("Otobüsün Geldi","Merhaba") }) { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding).fillMaxWidth().fillMaxHeight(), contentAlignment = Alignment.Center)
             {
-                Column() {
-                    Search(searchText.value, onQueryChange = {searchText.value = it},active =active,  onSearch = {active = it}, onActiveChange = {active = it},viewModel,sharedViewModel)
+                Column(){
+                    Box(modifier = Modifier.padding(SearchBarBoxPadding.value).onFocusChanged{
+                        focusState ->
+                        if (focusState.isFocused){
+                            SearchBarBoxPadding.value = 0.dp
+
+                        }
+                        else{
+                            SearchBarBoxPadding.value = 25.dp
+                        }
+                    }){
+                        Search(searchText.value, onQueryChange = {searchText.value = it},active =active,  onSearch = {active = it}, onActiveChange = {active = it},viewModel,sharedViewModel)
+                    }
                     FavCard(onExpandedChange = {favCardExpanded = it}, expanded = favCardExpanded)
                 }
             }
         }
     }
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Search(
