@@ -8,6 +8,7 @@ import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -196,8 +197,8 @@ private fun DurakList(list: List<Durak>,viewModel: DurakListViewModel)
     LazyColumn {
         items(items = list, key = { it.DURAKKODU }) { durak ->
             val (YON, SIRANO, DURAKKODU, DURAKADI, XKOORDINATI, YKOORDINATI, otobusVar) = durak
-               Column {
-                   Row {
+               Column(modifier = Modifier.animateItem(tween(durationMillis = 1000))) {
+                   Row() {
                        Card(colors = CardDefaults.cardColors(
                            containerColor = MaterialTheme.colorScheme.surface,),
                            modifier = Modifier.padding(3.dp).width(50.dp),
@@ -292,7 +293,7 @@ fun OtobusCarousel(viewModel: DurakListViewModel)
     OutlinedCard(modifier = Modifier.clickable{expanded.value = !expanded.value}){
         Column(modifier = Modifier.padding(10.dp).fillMaxWidth()) {
             Box(modifier = Modifier.fillMaxWidth()){
-                Row {
+                Row(horizontalArrangement = Arrangement.Center) {
                     Text("Seferde olan otobüsler (${item.size})")
                     Icon(stateIcons[if (expanded.value) 1 else 0], contentDescription = "Localized description")
                 }
