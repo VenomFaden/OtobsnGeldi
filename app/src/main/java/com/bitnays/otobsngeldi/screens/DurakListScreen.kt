@@ -9,6 +9,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,8 +29,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.DirectionsBus
@@ -120,7 +124,7 @@ fun DurakListScreen()
                                 Column(modifier = Modifier.fillMaxWidth()) {
                                     Column(modifier = Modifier.fillMaxWidth().padding(15.dp).wrapContentHeight()) {
                                         Box(contentAlignment = Alignment.TopStart){
-                                            Column {
+                                            Column() {
                                                 if (permissionBoolean){
                                                     KalanDurakSayisi(viewModel.KalanDurakSayisi(currentDurakList))
                                                     EnYakinDurak(viewModel)
@@ -130,14 +134,19 @@ fun DurakListScreen()
                                         Box(contentAlignment = Alignment.TopEnd, modifier = Modifier.fillMaxWidth()){
                                             Column {
                                                     Button(onClick = {navController.navigate("1")}){
+                                                        Icon(Icons.Filled.AccessTime, contentDescription = "Localized description",
+                                                            modifier = Modifier.size(20.dp))
+                                                        Spacer(modifier = Modifier.size(5.dp))
                                                         Text("Sefer Saatleri",fontSize =MaterialTheme.typography.labelSmall.fontSize)
-                                                        Icon(Icons.Filled.DirectionsBus, contentDescription = "Localized description",
-                                                            modifier = Modifier.size(15.dp))
+
                                                     }
                                                     Button(onClick = {navController.navigate("2")}){
-                                                        Text("Duyurular",fontSize = MaterialTheme.typography.labelSmall.fontSize)
                                                         Icon(Icons.Filled.SatelliteAlt, contentDescription = "Localized description",
                                                             modifier = Modifier.size(15.dp))
+                                                        Spacer(modifier = Modifier.size(5.dp))
+                                                        Text("Duyurular",fontSize = MaterialTheme.typography.labelSmall.fontSize)
+
+
                                                     }
                                             }
                                         }
@@ -195,7 +204,7 @@ private fun SelectDirection(yon1: String,yon2: String, oncheckedChange: (Int) ->
 private fun DurakList(list: List<Durak>,viewModel: DurakListViewModel)
 {
     LazyColumn {
-        items(items = list, key = { it.DURAKKODU }) { durak ->
+        itemsIndexed(items = list, key = { index, durak -> "${durak.DURAKKODU}-$index" }) { index, durak ->
             val (YON, SIRANO, DURAKKODU, DURAKADI, XKOORDINATI, YKOORDINATI, otobusVar) = durak
                Column(modifier = Modifier.animateItem(tween(durationMillis = 1000))) {
                    Row() {
@@ -229,7 +238,7 @@ private fun DurakList(list: List<Durak>,viewModel: DurakListViewModel)
                                                .height(25.dp)
                                                .clip(CircleShape))
                                    }
-
+                                   Spacer(modifier = Modifier.size(5.dp))
                                    Text(text = DURAKADI,maxLines = 1,)
                                }
                                if (DURAKADI == viewModel.nearDurak.value) // yakın durak

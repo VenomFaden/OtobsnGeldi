@@ -64,11 +64,9 @@ import kotlin.collections.component2
 fun SeferSaatleriScreen(viewModeShared: SharedViewModel) {
     val seferSaatleriViewModel: SeferSaatleriViewModel = viewModel()
     val hatkodu by viewModeShared.HatKodu
-    Log.d("test123","abc"+hatkodu)
     val context = LocalContext.current
     LaunchedEffect(Unit) {
         seferSaatleriViewModel.getSeferSaatleri(hatkodu,context)
-        Log.d("test123","aaa")
     }
     var yon by rememberSaveable { mutableIntStateOf(0) }
     var gun by rememberSaveable { mutableIntStateOf(0) }

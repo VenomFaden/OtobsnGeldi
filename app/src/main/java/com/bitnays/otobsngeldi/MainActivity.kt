@@ -19,15 +19,12 @@ import kotlinx.serialization.json.Json
 import kotlin.getValue
 
 class MainActivity : AppCompatActivity() {
-    private val client = OkHttpClient()
-    private lateinit var HatKodu: String
     private lateinit var binding: ActivityMainBinding
     private val mainViewModel : MainSearchViewModel by viewModels<MainSearchViewModel>()
     private val sharedViewModel: SharedViewModel by viewModels<SharedViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var intent = Intent(this, MainActivity3::class.java)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
@@ -43,9 +40,7 @@ class MainActivity : AppCompatActivity() {
             sharedViewModel.setHatOtoKonumString(it)
             if(it != "404" && it != "")
             {
-                Log.d("test123","burasi m1"+it.toString())
                 val hatkodu = sharedViewModel.hatKodu.value
-                Log.d("test123","m"+hatkodu)
                 var intent = Intent(this, MainActivity2::class.java)
                 intent.putExtra("intentString", it)
                 val json = Json.decodeFromString<ArrayList<OtoHatKonum>>(it) as ArrayList<OtoHatKonum>
@@ -53,15 +48,6 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
-
-    }
-    fun sendIntentToList(intentString: String)
-    {
-        var intent = Intent(this, MainActivity2::class.java)
-        intent.putExtra("intentString", intentString)
-        val json = Json.decodeFromString<ArrayList<OtoHatKonum>>(intentString) as ArrayList<OtoHatKonum>
-        val hatkodu = json.firstOrNull()?.hatkodu
-        intent.putExtra("hatkodu",hatkodu)
     }
     companion object {
         val MEDIA_TYPE_XML = "text/xml; charset=utf-8".toMediaType()

@@ -17,10 +17,11 @@ android {
         buildConfigField("String", "ibb", "\"https://api.ibb.gov.tr/iett/ibb/ibb.asmx?wsdl\"")
         buildConfigField("String", "SeferGerceklesme", "\"https://api.ibb.gov.tr/iett/FiloDurum/SeferGerceklesme.asmx?wsdl\"")
         buildConfigField("String", "PlanlananSeferSaatleri","\"https://api.ibb.gov.tr/iett/UlasimAnaVeri/PlanlananSeferSaati.asmx?wsdl\"")
+        buildConfigField("String", "Duyurular","\"https://api.ibb.gov.tr/iett/UlasimDinamikVeri/Duyurular.asmx?wsdl\"")
         minSdk = 28
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 11
+        versionName = "1.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

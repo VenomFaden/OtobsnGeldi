@@ -187,5 +187,31 @@ class repo (){
         val request: UrlRequest = requestBuilder.build()
         request.start()
     }
+    fun Duyurular(context: Context, onResponse: (String) -> Unit,onError: (CronetException?) -> Unit)
+    {
+        val postBody= """
+            <?xml version='1.0' encoding='utf-8'?>
+            <soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
+                <soap:Body>
+                    <GetDuyurular_json xmlns='http://tempuri.org/'>
+
+                    </GetDuyurular_json>
+                </soap:Body>
+            </soap:Envelope>
+        """.trimIndent()
+        val myBuilder = CronetEngine.Builder(context)
+        val cronetEngine: CronetEngine = myBuilder.build()
+        val executor: Executor = Executors.newSingleThreadExecutor()
+        var url = BuildConfig.Duyurular
+        val requestBuilder = cronetEngine.newUrlRequestBuilder(url, RequestCallback(onResponse,onError),executor)
+        val uploadDataProvider : UploadDataProvider = UploadDataProviders.create(postBody.toByteArray())
+        requestBuilder
+            .setHttpMethod("POST")
+            .addHeader("Content-Type","text/xml; charset=utf-8")
+            .addHeader("SOAPAction","http://tempuri.org/GetDuyurular_json")
+            .setUploadDataProvider(uploadDataProvider,executor)
+        val request: UrlRequest = requestBuilder.build()
+        request.start()
+    }
 
 }
